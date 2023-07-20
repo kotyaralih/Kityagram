@@ -79,6 +79,7 @@ public class AvatarDrawable extends Drawable {
     public static final int AVATAR_TYPE_FILTER_ARCHIVED = 11;
     public static final int AVATAR_TYPE_REGISTER = 13;
     public static final int AVATAR_TYPE_OTHER_CHATS = 14;
+    public static final int AVATAR_TYPE_CLOSE_FRIENDS = 15;
 
     private int alpha = 255;
     private Theme.ResourcesProvider resourcesProvider;
@@ -281,7 +282,7 @@ public class AvatarDrawable extends Drawable {
         return needApplyColorAccent ? Theme.changeColorAccent(color2) : color2;
     }
 
-    private String takeFirstCharacter(String text) {
+    private static String takeFirstCharacter(String text) {
         ArrayList<Emoji.EmojiSpanRange> ranges = Emoji.parseEmojis(text);
         if (ranges != null && !ranges.isEmpty() && ranges.get(0).start == 0) {
             return text.substring(0, ranges.get(0).end);
@@ -304,12 +305,16 @@ public class AvatarDrawable extends Drawable {
             lastName = null;
         }
 
-        stringBuilder.setLength(0);
+        getAvatarSymbols(firstName, lastName, custom, stringBuilder);
+    }
+
+    public static void getAvatarSymbols(String firstName, String lastName, String custom, StringBuilder result) {
+        result.setLength(0);
         if (custom != null) {
-            stringBuilder.append(custom);
+            result.append(custom);
         } else {
             if (firstName != null && firstName.length() > 0) {
-                stringBuilder.append(takeFirstCharacter(firstName));
+                result.append(takeFirstCharacter(firstName));
             }
             if (lastName != null && lastName.length() > 0) {
                 String lastNameLastWord = lastName;
@@ -317,15 +322,19 @@ public class AvatarDrawable extends Drawable {
                 if ((index = lastNameLastWord.lastIndexOf(' ')) >= 0) {
                     lastNameLastWord = lastNameLastWord.substring(index + 1);
                 }
-                stringBuilder.append("\u200C");
-                stringBuilder.append(takeFirstCharacter(lastNameLastWord));
+                if (Build.VERSION.SDK_INT > 17) {
+                    result.append("\u200C");
+                }
+                result.append(takeFirstCharacter(lastNameLastWord));
             } else if (firstName != null && firstName.length() > 0) {
                 for (int a = firstName.length() - 1; a >= 0; a--) {
                     if (firstName.charAt(a) == ' ') {
                         if (a != firstName.length() - 1 && firstName.charAt(a + 1) != ' ') {
-                            int index = stringBuilder.length();
-                            stringBuilder.append("\u200C");
-                            stringBuilder.append(takeFirstCharacter(firstName.substring(index)));
+                            int index = result.length();
+                            if (Build.VERSION.SDK_INT > 17) {
+                                result.append("\u200C");
+                            }
+                            result.append(takeFirstCharacter(firstName.substring(index)));
                             break;
                         }
                     }
@@ -412,6 +421,8 @@ public class AvatarDrawable extends Drawable {
                 drawable = Theme.avatarDrawables[11];
             } else if (avatarType == AVATAR_TYPE_OTHER_CHATS) {
                 drawable = Theme.avatarDrawables[12];
+            } else if (avatarType == AVATAR_TYPE_CLOSE_FRIENDS) {
+                drawable = Theme.avatarDrawables[13];
             } else {
                 drawable = Theme.avatarDrawables[9];
             }

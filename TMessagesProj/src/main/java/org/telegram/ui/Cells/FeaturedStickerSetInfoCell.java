@@ -195,7 +195,11 @@ public class FeaturedStickerSetInfoCell extends FrameLayout {
         } else {
             nameTextView.setText(stickerSet.set.title);
         }
-        infoTextView.setText(LocaleController.formatPluralString("Stickers", stickerSet.set.count));
+        if (stickerSet.set.emojis) {
+            infoTextView.setText(LocaleController.formatPluralString("EmojiCount", stickerSet.set.count));
+        } else {
+            infoTextView.setText(LocaleController.formatPluralString("Stickers", stickerSet.set.count));
+        }
         isUnread = unread;
         if (canAddRemove) {
             if (hasOnClick) {
@@ -322,7 +326,7 @@ public class FeaturedStickerSetInfoCell extends FrameLayout {
             canvas.drawCircle(nameTextView.getRight() + AndroidUtilities.dp(12), AndroidUtilities.dp(20), AndroidUtilities.dp(4) * unreadProgress, paint);
         }
         if (needDivider && !ExteraConfig.disableDividers) {
-            canvas.drawLine(0, 0, getWidth(), 0, Theme.dividerPaint);
+            canvas.drawLine(0, 0, getWidth(), 0, Theme.getThemePaint(Theme.key_paint_divider, resourcesProvider));
         }
     }
 

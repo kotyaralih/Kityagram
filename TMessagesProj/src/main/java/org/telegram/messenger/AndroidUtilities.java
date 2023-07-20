@@ -76,7 +76,9 @@ import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.PixelCopy;
 import android.view.Surface;
+import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -95,6 +97,7 @@ import android.view.inputmethod.InputMethodSubtype;
 import android.view.inspector.WindowInspector;
 import android.webkit.MimeTypeMap;
 import android.widget.EdgeEffect;
+import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -103,6 +106,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.graphics.ColorUtils;
@@ -119,6 +123,7 @@ import com.android.internal.telephony.ITelephony;
 import com.exteragram.messenger.ExteraConfig;
 import com.exteragram.messenger.utils.FontUtils;
 import com.google.android.exoplayer2.util.Consumer;
+import com.google.android.exoplayer2.util.Log;
 import com.google.android.gms.auth.api.phone.SmsRetriever;
 import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
 import com.google.android.gms.tasks.Task;
@@ -151,6 +156,7 @@ import org.telegram.ui.Components.MotionBackgroundDrawable;
 import org.telegram.ui.Components.PickerBottomLayout;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.ShareAlert;
+import org.telegram.ui.Components.SizeNotifierFrameLayout;
 import org.telegram.ui.Components.TypefaceSpan;
 import org.telegram.ui.Components.URLSpanReplacement;
 import org.telegram.ui.Components.UndoView;
@@ -192,6 +198,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -452,7 +460,7 @@ public class AndroidUtilities {
         return replaceSingleTag(str, -1, 0, runnable);
     }
 
-    public static CharSequence replaceSingleTag(String str, int colorKey, int type, Runnable runnable) {
+    public static SpannableStringBuilder replaceSingleTag(String str, int colorKey, int type, Runnable runnable) {
         int startIndex = str.indexOf("**");
         int endIndex = str.indexOf("**", startIndex + 1);
         str = str.replace("**", "");
@@ -550,7 +558,7 @@ public class AndroidUtilities {
                     }
                     if (user != null) {
                         ContactsController.getInstance(currentAccount).markAsContacted(contactUri);
-                        SendMessagesHelper.getInstance(currentAccount).sendMessage(text, user.id, null, null, null, true, null, null, null, true, 0, null, false);
+                        SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(text, user.id, null, null, null, true, null, null, null, true, 0, null, false));
                     }
                 }
             } catch (Exception e) {
@@ -564,12 +572,16 @@ public class AndroidUtilities {
     }
 
     public static boolean findClickableView(ViewGroup container, float x, float y) {
+        if (container == null) {
+            return false;
+        }
         for (int i = 0; i < container.getChildCount(); i++) {
             View child = container.getChildAt(i);
             if (child.getVisibility() != View.VISIBLE) {
                 continue;
             }
-            if (child.isClickable()) {
+            child.getHitRect(AndroidUtilities.rectTmp2);
+            if (AndroidUtilities.rectTmp2.contains((int) x, (int) y) && child.isClickable()) {
                 return true;
             } else if (child instanceof ViewGroup && findClickableView((ViewGroup) child, x - child.getX(), y - child.getY())) {
                 return true;
@@ -663,6 +675,44 @@ public class AndroidUtilities {
                     .append(time);
         } else {
             stringBuilder.append(time);
+        }
+    }
+
+    public static void getViewPositionInParent(View view, ViewGroup parent, float[] pointPosition) {
+        pointPosition[0] = 0;
+        pointPosition[1] = 0;
+        View currentView = view;
+        while (currentView != parent) {
+            //fix strange offset inside view pager
+            if (!(currentView.getParent() instanceof ViewPager)) {
+                pointPosition[0] += currentView.getX();
+                pointPosition[1] += currentView.getY();
+            }
+            currentView = (View) currentView.getParent();
+        }
+    }
+
+    public static MotionEvent emptyMotionEvent() {
+        return MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, 0, 0, 0);
+    }
+
+    public static boolean isDarkColor(int color) {
+        return AndroidUtilities.computePerceivedBrightness(color) < 0.721f;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static void getBitmapFromSurface(SurfaceView surfaceView, Bitmap surfaceBitmap) {
+        if (surfaceView == null || !surfaceView.getHolder().getSurface().isValid()) {
+            return;
+        }
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        PixelCopy.request(surfaceView, surfaceBitmap, copyResult -> {
+            countDownLatch.countDown();
+        }, Utilities.searchQueue.getHandler());
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -768,7 +818,11 @@ public class AndroidUtilities {
                     }
                 }
             }
-            text.setSpan(new URLSpan(link.url), link.start, link.end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            String url = link.url;
+            if (url != null) {
+                url = url.replaceAll("∕|⁄|%E2%81%84|%E2%88%95", "/");
+            }
+            text.setSpan(new URLSpan(url), link.start, link.end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         return true;
     }
@@ -1313,6 +1367,20 @@ public class AndroidUtilities {
                     }
                 }
             }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
+
+
+    @SuppressLint("WrongConstant")
+    public static void lockOrientation(Activity activity, int orientation) {
+        if (activity == null) {
+            return;
+        }
+        try {
+            prevOrientation = activity.getRequestedOrientation();
+            activity.setRequestedOrientation(orientation);
         } catch (Exception e) {
             FileLog.e(e);
         }
@@ -4262,10 +4330,10 @@ public class AndroidUtilities {
     public static void lerp(RectF a, RectF b, float f, RectF to) {
         if (to != null) {
             to.set(
-                    AndroidUtilities.lerp(a.left, b.left, f),
-                    AndroidUtilities.lerp(a.top, b.top, f),
-                    AndroidUtilities.lerp(a.right, b.right, f),
-                    AndroidUtilities.lerp(a.bottom, b.bottom, f)
+                lerp(a.left, b.left, f),
+                lerp(a.top, b.top, f),
+                lerp(a.right, b.right, f),
+                lerp(a.bottom, b.bottom, f)
             );
         }
     }
@@ -4273,10 +4341,10 @@ public class AndroidUtilities {
     public static void lerp(Rect a, Rect b, float f, Rect to) {
         if (to != null) {
             to.set(
-                    AndroidUtilities.lerp(a.left, b.left, f),
-                    AndroidUtilities.lerp(a.top, b.top, f),
-                    AndroidUtilities.lerp(a.right, b.right, f),
-                    AndroidUtilities.lerp(a.bottom, b.bottom, f)
+                lerp(a.left, b.left, f),
+                lerp(a.top, b.top, f),
+                lerp(a.right, b.right, f),
+                lerp(a.bottom, b.bottom, f)
             );
         }
     }
@@ -4417,12 +4485,14 @@ public class AndroidUtilities {
     public static void setLightNavigationBar(View view, boolean enable) {
         if (view != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int flags = view.getSystemUiVisibility();
-            if (enable) {
-                flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-            } else {
-                flags &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+            if (((flags & View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR) > 0) != enable) {
+                if (enable) {
+                    flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+                } else {
+                    flags &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+                }
+                view.setSystemUiVisibility(flags);
             }
-            view.setSystemUiVisibility(flags);
         }
     }
 
@@ -4899,15 +4969,10 @@ public class AndroidUtilities {
         return bitmap;
     }
 
-    public static void makeGlobalBlurBitmap(Utilities.Callback<Bitmap> onBitmapDone, float amount) {
-        if (onBitmapDone == null) {
-            return;
-        }
-
-        List<View> views = null;
+    public static List<View> allGlobalViews() {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                views = WindowInspector.getGlobalWindowViews();
+                return WindowInspector.getGlobalWindowViews();
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 Class wmgClass = Class.forName("android.view.WindowManagerGlobal");
                 Object wmgInstance = wmgClass.getMethod("getInstance").invoke(null, (Object[]) null);
@@ -4916,10 +4981,11 @@ public class AndroidUtilities {
                 Method getRootView = wmgClass.getMethod("getRootView", String.class);
                 String[] rootViewNames = (String[]) getViewRootNames.invoke(wmgInstance, (Object[]) null);
 
-                views = new ArrayList<>();
+                List<View> views = new ArrayList<>();
                 for (String viewName : rootViewNames) {
                     views.add((View) getRootView.invoke(wmgInstance, viewName));
                 }
+                return views;
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 Class wmiClass = Class.forName("android.view.WindowManagerImpl");
                 Object wmiInstance = wmiClass.getMethod("getDefault").invoke(null);
@@ -4929,14 +4995,23 @@ public class AndroidUtilities {
                 Object viewsObject = viewsField.get(wmiInstance);
 
                 if (viewsObject instanceof List) {
-                    views = (List<View>) viewsField.get(wmiInstance);
+                    return (List<View>) viewsField.get(wmiInstance);
                 } else if (viewsObject instanceof View[]) {
-                    views = Arrays.asList((View[]) viewsField.get(wmiInstance));
+                    return Arrays.asList((View[]) viewsField.get(wmiInstance));
                 }
             }
         } catch (Exception e) {
-            FileLog.e("makeGlobalBlurBitmap()", e);
+            FileLog.e("allGlobalViews()", e);
         }
+        return null;
+    }
+
+    public static void makeGlobalBlurBitmap(Utilities.Callback<Bitmap> onBitmapDone, float amount) {
+        if (onBitmapDone == null) {
+            return;
+        }
+
+        List<View> views = allGlobalViews();
 
         if (views == null) {
             onBitmapDone.run(null);
@@ -5197,5 +5272,47 @@ public class AndroidUtilities {
         for (int i = 0; i < recyclerView.getAttachedScrapChildCount(); i++) {
             consumer.accept(recyclerView.getAttachedScrapChildAt(i));
         }
+    }
+
+    public static int getDominantColor(Bitmap bitmap) {
+        if (bitmap == null) {
+            return Color.WHITE;
+        }
+        float stepH = (bitmap.getHeight() - 1) / 10f;
+        float stepW = (bitmap.getWidth() - 1) / 10f;
+        int r = 0, g = 0, b = 0;
+        int amount = 0;
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                int x = (int) (stepW * i);
+                int y = (int) (stepH * j);
+                int pixel = bitmap.getPixel(x, y);
+                if (Color.alpha(pixel) > 200) {
+                    r += Color.red(pixel);
+                    g += Color.green(pixel);
+                    b += Color.blue(pixel);
+                    amount++;
+                }
+            }
+        }
+        if (amount == 0) {
+            return 0;
+        }
+        return Color.argb(255, r / amount, g / amount, b / amount);
+    }
+
+    @NonNull
+    public static String translitSafe(String str) {
+        try {
+            if (str != null) {
+                str = str.toLowerCase();
+            }
+            String s = LocaleController.getInstance().getTranslitString(str, false);
+            if (s == null) {
+                return "";
+            }
+            return s;
+        } catch (Exception ignore) {}
+        return "";
     }
 }

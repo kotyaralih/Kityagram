@@ -38,6 +38,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.exteragram.messenger.ExteraConfig;
+import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.DocumentObject;
@@ -783,7 +784,7 @@ public class ScrollSlidingTabStrip extends HorizontalScrollView {
             h *= AndroidUtilities.lerp(1f, 0.55f, expandProgressInterpolated);
             tabBounds.set(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2);
 
-            selectorPaint.setColor(0x2effffff & getThemedColor(Theme.key_chat_emojiPanelIcon));
+            selectorPaint.setColor(ColorUtils.setAlphaComponent(getThemedColor(Theme.key_chat_emojiPanelIcon), 0x2e));
             selectorPaint.setAlpha((int) (selectorPaint.getAlpha() * selectedAlpha));
             canvas.drawRoundRect(tabBounds, AndroidUtilities.dp(8), AndroidUtilities.dp(8), selectorPaint);
         }

@@ -61,6 +61,7 @@ import org.telegram.ui.Components.NestedSizeNotifierLayout;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.ViewPagerFixed;
 import org.telegram.ui.Storage.CacheModel;
+import org.telegram.ui.Stories.StoriesListPlaceProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +74,8 @@ public class CachedMediaLayout extends FrameLayout implements NestedSizeNotifier
     private static final int PAGE_TYPE_MEDIA = 1;
     private static final int PAGE_TYPE_DOCUMENTS = 2;
     private static final int PAGE_TYPE_MUSIC = 3;
-    private static final int PAGE_TYPE_VOICE = 4;
+    private static final int PAGE_TYPE_STORIES = 4;
+    private static final int PAGE_TYPE_VOICE = 5;
 
     private static final int VIEW_TYPE_CHAT = 1;
     private static final int VIEW_TYPE_FILE_ENTRY = 2;
@@ -103,7 +105,8 @@ public class CachedMediaLayout extends FrameLayout implements NestedSizeNotifier
 
         int CacheTabChats;
         allPages[PAGE_TYPE_CHATS] = new Page(LocaleController.getString("FilterChats", R.string.FilterChats), PAGE_TYPE_CHATS, new DialogsAdapter());
-        allPages[PAGE_TYPE_MEDIA] = new Page(LocaleController.getString("MediaTab", R.string.MediaTab), PAGE_TYPE_MEDIA, new MediaAdapter());
+        //allPages[PAGE_TYPE_STORIES] = new Page(LocaleController.getString("FilterStories", R.string.FilterStories), PAGE_TYPE_STORIES, new MediaAdapter(true));
+        allPages[PAGE_TYPE_MEDIA] = new Page(LocaleController.getString("MediaTab", R.string.MediaTab), PAGE_TYPE_MEDIA, new MediaAdapter(false));
         allPages[PAGE_TYPE_DOCUMENTS] = new Page(LocaleController.getString("SharedFilesTab2", R.string.SharedFilesTab2), PAGE_TYPE_DOCUMENTS, new DocumentsAdapter());
         allPages[PAGE_TYPE_MUSIC] = new Page(LocaleController.getString("Music", R.string.Music), PAGE_TYPE_MUSIC, new MusicAdapter());
         //   allPages[PAGE_TYPE_VOICE] = new Page(LocaleController.getString("Voice", R.string.Voice), PAGE_TYPE_VOICE, new VoiceAdapter());
@@ -163,7 +166,17 @@ public class CachedMediaLayout extends FrameLayout implements NestedSizeNotifier
                         ItemInner itemInner = adapter.itemInners.get(position);
                         //if (cacheModel.getSelectedFiles() == 0) {
                         if (view instanceof SharedPhotoVideoCell2) {
-                            openPhoto(itemInner, (MediaAdapter) adapter, recyclerListView, (SharedPhotoVideoCell2)view);
+                            boolean isStory = ((MediaAdapter) adapter).isStories;
+                            if (isStory) {
+                                TLRPC.StoryItem storyItem = new TLRPC.TL_storyItem();
+                                storyItem.dialogId = itemInner.file.dialogId;
+                                storyItem.id = Objects.hash(itemInner.file.file.getAbsolutePath());
+                                storyItem.attachPath = itemInner.file.file.getAbsolutePath();
+                                storyItem.date = -1;
+                                parentFragment.getOrCreateStoryViewer().open(context, storyItem, StoriesListPlaceProvider.of(recyclerListView));
+                            } else {
+                                openPhoto(itemInner, (MediaAdapter) adapter, recyclerListView, (SharedPhotoVideoCell2) view);
+                            }
                             return;
                         }
 
@@ -243,7 +256,7 @@ public class CachedMediaLayout extends FrameLayout implements NestedSizeNotifier
             public void bindView(View view, int position, int viewType) {
                 RecyclerListView recyclerListView = (RecyclerListView) view;
                 recyclerListView.setAdapter(pages.get(position).adapter);
-                if (pages.get(position).type == PAGE_TYPE_MEDIA) {
+                if (pages.get(position).type == PAGE_TYPE_MEDIA || pages.get(position).type == PAGE_TYPE_STORIES) {
                     recyclerListView.setLayoutManager(new GridLayoutManager(view.getContext(), 3));
                 } else {
                     recyclerListView.setLayoutManager(new LinearLayoutManager(view.getContext()));
@@ -384,6 +397,8 @@ public class CachedMediaLayout extends FrameLayout implements NestedSizeNotifier
                 } else if (allPages[i].type == PAGE_TYPE_MUSIC && !cacheModel.music.isEmpty()) {
                     pages.add(allPages[i]);
                 } else if (allPages[i].type == PAGE_TYPE_VOICE && !cacheModel.voice.isEmpty()) {
+                    pages.add(allPages[i]);
+                } else if (allPages[i].type == PAGE_TYPE_STORIES && !cacheModel.stories.isEmpty()) {
                     pages.add(allPages[i]);
                 }
             }
@@ -595,6 +610,8 @@ public class CachedMediaLayout extends FrameLayout implements NestedSizeNotifier
                     files = cacheModel.music;
                 } else if (type == PAGE_TYPE_VOICE) {
                     files = cacheModel.voice;
+                } else if (type == PAGE_TYPE_STORIES) {
+                    files = cacheModel.stories;
                 }
                 if (files != null) {
                     for (int i = 0; i < files.size(); i++) {
@@ -648,8 +665,10 @@ public class CachedMediaLayout extends FrameLayout implements NestedSizeNotifier
 
         private SharedPhotoVideoCell2.SharedResources sharedResources;
 
-        private MediaAdapter() {
-            super(PAGE_TYPE_MEDIA);
+        boolean isStories;
+        private MediaAdapter(boolean stories) {
+            super(stories ? PAGE_TYPE_STORIES : PAGE_TYPE_MEDIA);
+            this.isStories = stories;
         }
 
         ArrayList<Object> photoEntries = new ArrayList<>();
@@ -681,6 +700,7 @@ public class CachedMediaLayout extends FrameLayout implements NestedSizeNotifier
         }
 
         CombinedDrawable thumb;
+        private int storiesPointer;
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
@@ -693,7 +713,17 @@ public class CachedMediaLayout extends FrameLayout implements NestedSizeNotifier
             boolean animated = file == cell.getTag();
             cell.setTag(file);
             int size = (int) Math.max(100, AndroidUtilities.getRealScreenSize().x / AndroidUtilities.density);
-            if (file.type == TYPE_VIDEOS) {
+            if (isStories) {
+                boolean isVideo = file.file.getAbsolutePath().endsWith(".mp4");
+                if (isVideo) {
+                    cell.imageReceiver.setImage(ImageLocation.getForPath(file.file.getAbsolutePath()), size + "_" + size + "_pframe", thumb, null, null, 0);
+                } else {
+                    cell.imageReceiver.setImage(ImageLocation.getForPath(file.file.getAbsolutePath()), size + "_" + size, thumb, null, null, 0);
+                }
+                cell.storyId = Objects.hash(file.file.getAbsolutePath());
+                cell.isStory = true;
+                cell.setVideoText(AndroidUtilities.formatFileSize(file.size), true);
+            } else if (file.type == TYPE_VIDEOS) {
                 cell.imageReceiver.setImage(ImageLocation.getForPath("vthumb://" + 0 + ":" + file.file.getAbsolutePath()), size + "_" + size, thumb, null, null, 0);
                 cell.setVideoText(AndroidUtilities.formatFileSize(file.size), true);
             } else {
