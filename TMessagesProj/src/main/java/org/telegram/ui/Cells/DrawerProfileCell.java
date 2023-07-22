@@ -66,6 +66,7 @@ import org.telegram.ui.Components.Premium.StarParticlesView;
 import org.telegram.ui.Components.RLottieDrawable;
 import org.telegram.ui.Components.RLottieImageView;
 import org.telegram.ui.Components.Reactions.AnimatedEmojiEffect;
+import org.telegram.ui.Components.Reactions.HwEmojis;
 import org.telegram.ui.Components.Reactions.ReactionsLayoutInBubble;
 import org.telegram.ui.Components.SnowflakesEffect;
 import org.telegram.ui.ThemeActivity;
@@ -125,6 +126,38 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
                     getEmojiStatusLocation(AndroidUtilities.rectTmp2);
                     animatedStatus.translate(AndroidUtilities.rectTmp2.centerX(), AndroidUtilities.rectTmp2.centerY());
                 }
+            }
+
+            @Override
+            public void invalidate() {
+                if (HwEmojis.grab(this)) {
+                    return;
+                }
+                super.invalidate();
+            }
+
+            @Override
+            public void invalidate(int l, int t, int r, int b) {
+                if (HwEmojis.grab(this)) {
+                    return;
+                }
+                super.invalidate(l, t, r, b);
+            }
+
+            @Override
+            public void invalidateDrawable(Drawable who) {
+                if (HwEmojis.grab(this)) {
+                    return;
+                }
+                super.invalidateDrawable(who);
+            }
+
+            @Override
+            public void invalidate(Rect dirty) {
+                if (HwEmojis.grab(this)) {
+                    return;
+                }
+                super.invalidate(dirty);
             }
         };
         nameTextView.setRightDrawableOnClick(e -> {
@@ -442,6 +475,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        status.attach();
         updateColors();
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
         for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; i++){
@@ -452,6 +486,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        status.detach();
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
         for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; i++){
             NotificationCenter.getInstance(i).removeObserver(this, NotificationCenter.currentUserPremiumStatusChanged);

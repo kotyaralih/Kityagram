@@ -61,9 +61,11 @@ import com.google.zxing.common.detector.MathUtils;
 import com.exteragram.messenger.camera.BaseCameraView;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.DispatchQueue;
 import org.telegram.messenger.FileLog;
+import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
@@ -78,6 +80,7 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RLottieDrawable;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -96,6 +99,8 @@ import javax.microedition.khronos.opengles.GL;
 
 @SuppressLint("NewApi")
 public class CameraView extends BaseCameraView implements TextureView.SurfaceTextureListener, CameraController.ICameraView {
+
+    public boolean WRITE_TO_FILE_IN_BACKGROUND = true;
 
     public boolean isStory;
     private Size[] previewSize = new Size[2];
@@ -273,7 +278,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
             addToDualWait(400L);
             return;
         }
-        if (!isFrontface && "samsung".equalsIgnoreCase(Build.MANUFACTURER) && !toggledDualAsSave) {
+        if (!isFrontface && "samsung".equalsIgnoreCase(Build.MANUFACTURER) && !toggledDualAsSave && cameraSession[0] != null) {
             final Handler handler = cameraThread.getHandler();
             if (handler != null) {
                 cameraThread.sendMessage(handler.obtainMessage(cameraThread.BLUR_CAMERA1), 0);
@@ -1032,7 +1037,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
 
         private CameraSession currentSession[] = new CameraSession[2];
 
-        private SurfaceTexture[] cameraSurface = new SurfaceTexture[2];
+        private final SurfaceTexture[] cameraSurface = new SurfaceTexture[2];
 
         private final int DO_RENDER_MESSAGE = 0;
         private final int DO_SHUTDOWN_MESSAGE = 1;
@@ -1319,11 +1324,13 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
         }
 
         public void finish() {
-            for (int i = 0; i < 2; ++i) {
-                if (cameraSurface[i] != null) {
-                    cameraSurface[i].setOnFrameAvailableListener(null);
-                    cameraSurface[i].release();
-                    cameraSurface[i] = null;
+            if (cameraSurface != null) {
+                for (int i = 0; i < cameraSurface.length; ++i) {
+                    if (cameraSurface[i] != null) {
+                        cameraSurface[i].setOnFrameAvailableListener(null);
+                        cameraSurface[i].release();
+                        cameraSurface[i] = null;
+                    }
                 }
             }
             if (eglSurface != null) {
@@ -1454,7 +1461,10 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                     continue;
                 }
                 final int i = a < 0 ? 1 : a;
-                if (cameraSurface[i] == null || i != 0 && (currentSession[i] == null || !currentSession[i].isInitied()) || i == 0 && cameraId1 < 0 && !dual || i == 1 && cameraId2 < 0) {
+                if (cameraSurface[i] == null) {
+                    continue;
+                }
+                if (i != 0 && (currentSession[i] == null || !currentSession[i].isInitied()) || i == 0 && cameraId1 < 0 && !dual || i == 1 && cameraId2 < 0) {
                     continue;
                 }
 
@@ -1479,7 +1489,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 GLES20.glUniformMatrix4fv(vertexMatrixHandle, 1, false, mMVPMatrix[i], 0);
                 if (i == 0) {
                     GLES20.glUniform2f(pixelHandle, pixelW, pixelH);
-                    GLES20.glUniform1f(dualHandle, 0f);
+                    GLES20.glUniform1f(dualHandle, dual ? 1 : 0);
                 } else {
                     GLES20.glUniform2f(pixelHandle, pixelDualW, pixelDualH);
                     GLES20.glUniform1f(dualHandle, 1f);
@@ -1937,6 +1947,8 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
         private static final int IFRAME_INTERVAL = 1;
 
         private File videoFile;
+        private File fileToWrite;
+        private boolean writingToDifferentFile;
         private int videoBitrate;
         private boolean videoConvertFirstWrite = true;
         private boolean blendEnabled;
@@ -2332,7 +2344,8 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 GLES20.glEnable(GLES20.GL_BLEND);
                 blendEnabled = true;
             }
-            if (dual) {
+            final boolean isDual = dual;
+            if (isDual) {
                 GLES20.glClearColor(0.f, 0.f, 0.f, 1.f);
                 GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
             }
@@ -2363,7 +2376,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 GLES20.glUniform1f(blurHandle, 0);
                 if (i == 0) {
                     GLES20.glUniform2f(pixelHandle, pixelW, pixelH);
-                    GLES20.glUniform1f(dualHandle, 0f);
+                    GLES20.glUniform1f(dualHandle, isDual ? 1f : 0f);
                 } else {
                     GLES20.glUniform2f(pixelHandle, pixelDualW, pixelDualH);
                     GLES20.glUniform1f(dualHandle, 1f);
@@ -2468,6 +2481,19 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 e.printStackTrace();
             }
 
+            if (writingToDifferentFile) {
+                if (!fileToWrite.renameTo(videoFile)) {
+                    FileLog.e("unable to rename file, try move file");
+                    try {
+                        AndroidUtilities.copyFile(fileToWrite, videoFile);
+                        fileToWrite.delete();
+                    } catch (IOException e) {
+                        FileLog.e(e);
+                        FileLog.e("unable to move file");
+                    }
+                }
+            }
+
             EGL14.eglDestroySurface(eglDisplay, eglSurface);
             eglSurface = EGL14.EGL_NO_SURFACE;
             if (surface != null) {
@@ -2570,8 +2596,24 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 surface = videoEncoder.createInputSurface();
                 videoEncoder.start();
 
+                boolean isSdCard = ImageLoader.isSdCardPath(videoFile);
+                fileToWrite = videoFile;
+                if (isSdCard) {
+                    try {
+                        fileToWrite = new File(ApplicationLoader.getFilesDirFixed(), "camera_tmp.mp4");
+                        if (fileToWrite.exists()) {
+                            fileToWrite.delete();
+                        }
+                        writingToDifferentFile = true;
+                    } catch (Throwable e) {
+                        FileLog.e(e);
+                        fileToWrite = videoFile;
+                        writingToDifferentFile = false;
+                    }
+                }
+
                 Mp4Movie movie = new Mp4Movie();
-                movie.setCacheFile(videoFile);
+                movie.setCacheFile(fileToWrite);
                 movie.setRotation(0);
                 movie.setSize(videoWidth, videoHeight);
                 mediaMuxer = new MP4Builder().createMovie(movie, false, false);
@@ -2723,7 +2765,6 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                     if (encodedData == null) {
                         throw new RuntimeException("encoderOutputBuffer " + encoderStatus + " was null");
                     }
-                    boolean allowReleaseBuffer = true;
                     if (videoBufferInfo.size > 1) {
                         if ((videoBufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) == 0) {
                             if (prependHeaderSize != 0 && (videoBufferInfo.flags & MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0) {
@@ -2739,18 +2780,10 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                             bufferInfo.offset = videoBufferInfo.offset;
                             bufferInfo.flags = videoBufferInfo.flags;
                             bufferInfo.presentationTimeUs = videoBufferInfo.presentationTimeUs;
-                            allowReleaseBuffer = false;
+                            ByteBuffer byteBuffer = encodedData.duplicate();
                             fileWriteQueue.postRunnable(() -> {
                                 try {
-                                    mediaMuxer.writeSampleData(videoTrackIndex, encodedData, bufferInfo, true);
-                                    MediaCodec videoEncoder = VideoRecorder.this.videoEncoder;
-                                    if (videoEncoder != null) {
-                                        try {
-                                            videoEncoder.releaseOutputBuffer(encoderStatus, false);
-                                        } catch (Throwable e) {
-                                            //ignore IllegalStateException if codec released
-                                        }
-                                    }
+                                    mediaMuxer.writeSampleData(videoTrackIndex, byteBuffer, bufferInfo, true);
                                 } catch (Exception e) {
                                     FileLog.e(e);
                                 }
@@ -2787,9 +2820,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                             videoTrackIndex = mediaMuxer.addTrack(newFormat, false);
                         }
                     }
-                    if (allowReleaseBuffer) {
-                        videoEncoder.releaseOutputBuffer(encoderStatus, false);
-                    }
+                    videoEncoder.releaseOutputBuffer(encoderStatus, false);
                     if ((videoBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
                         break;
                     }
@@ -2824,24 +2855,16 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                         bufferInfo.offset = audioBufferInfo.offset;
                         bufferInfo.flags = audioBufferInfo.flags;
                         bufferInfo.presentationTimeUs = audioBufferInfo.presentationTimeUs;
+                        ByteBuffer byteBuffer = encodedData.duplicate();
                         fileWriteQueue.postRunnable(() -> {
                             try {
-                                mediaMuxer.writeSampleData(audioTrackIndex, encodedData, bufferInfo, false);
-                                MediaCodec audioEncoder = VideoRecorder.this.audioEncoder;
-                                if (audioEncoder != null) {
-                                    try {
-                                        audioEncoder.releaseOutputBuffer(encoderStatus, false);
-                                    } catch (Throwable e) {
-                                        //ignore IllegalStateException if codec released
-                                    }
-                                }
+                                mediaMuxer.writeSampleData(audioTrackIndex, byteBuffer, bufferInfo, false);
                             } catch (Exception e) {
                                 FileLog.e(e);
                             }
                         });
-                    } else {
-                        audioEncoder.releaseOutputBuffer(encoderStatus, false);
                     }
+                    audioEncoder.releaseOutputBuffer(encoderStatus, false);
                     if ((audioBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
                         break;
                     }

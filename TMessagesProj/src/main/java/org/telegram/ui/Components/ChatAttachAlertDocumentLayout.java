@@ -949,11 +949,15 @@ public class ChatAttachAlertDocumentLayout extends ChatAttachAlert.AttachAlertLa
 
     private void checkDirectory(File rootDir) {
         File[] files = rootDir.listFiles();
+        File storiesDir = FileLoader.checkDirectory(FileLoader.MEDIA_DIR_STORIES);
         if (files != null) {
             for (int a = 0; a < files.length; a++) {
                 File file = files[a];
                 if (file.isDirectory() && file.getName().equals(AyuConstants.APP_NAME)) {
                     checkDirectory(file);
+                    continue;
+                }
+                if (file.equals(storiesDir)) {
                     continue;
                 }
                 ListItem item = new ListItem();
@@ -1167,9 +1171,15 @@ public class ChatAttachAlertDocumentLayout extends ChatAttachAlert.AttachAlertLa
         }
         currentDir = dir;
         listAdapter.items.clear();
+
+        File storiesDir = FileLoader.checkDirectory(FileLoader.MEDIA_DIR_STORIES);
         for (int a = 0; a < files.length; a++) {
             File file = files[a];
             if (file.getName().indexOf('.') == 0) {
+                continue;
+            }
+
+            if (file.equals(storiesDir)) {
                 continue;
             }
             ListItem item = new ListItem();
