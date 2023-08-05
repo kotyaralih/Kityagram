@@ -163,6 +163,7 @@ public class FileLog {
             privateFields.add("networkType");
             privateFields.add("disableFree");
             privateFields.add("mContext");
+            privateFields.add("priority");
 
             //exclude file loading
             excludeRequests = new HashSet<>();
@@ -178,7 +179,7 @@ public class FileLog {
 
                 @Override
                 public boolean shouldSkipClass(Class<?> clazz) {
-                    return clazz.isInstance(AnimatedFileDrawable.class) || clazz.isInstance(ColorStateList.class) || clazz.isInstance(Context.class);
+                    return clazz.isInstance(DispatchQueue.class) || clazz.isInstance(AnimatedFileDrawable.class) || clazz.isInstance(ColorStateList.class) || clazz.isInstance(Context.class);
                 }
             };
             gson = new GsonBuilder().addSerializationExclusionStrategy(strategy).registerTypeAdapterFactory(RuntimeClassNameTypeAdapterFactory.of(TLObject.class, "type_", strategy)).create();
