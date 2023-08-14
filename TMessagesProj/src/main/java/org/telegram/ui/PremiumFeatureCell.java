@@ -11,8 +11,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.R;
+import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.LayoutHelper;
 
@@ -20,7 +23,7 @@ import com.exteragram.messenger.ExteraConfig;
 
 public class PremiumFeatureCell extends FrameLayout {
 
-    private final TextView title;
+    private final SimpleTextView title;
     private final TextView description;
     public ImageView imageView;
     boolean drawDivider;

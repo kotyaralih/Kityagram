@@ -29,6 +29,7 @@ import com.exteragram.messenger.ExteraConfig;
 import com.google.android.exoplayer2.util.Consumer;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.BotWebViewVibrationEffect;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.ActionBarMenuSubItem;
@@ -37,6 +38,7 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.UserCell;
 import org.telegram.ui.ProfileActivity;
+import org.telegram.ui.Stories.recorder.HintView2;
 
 public class ItemOptions {
 
@@ -60,6 +62,7 @@ public class ItemOptions {
     private View scrimView;
     private Drawable scrimViewBackground;
     private int gravity = Gravity.RIGHT;
+    private boolean ignoreX;
 
     private ActionBarPopupWindow actionBarPopupWindow;
     private final float[] point = new float[2];
@@ -85,10 +88,6 @@ public class ItemOptions {
         this.scrimView = scrimView;
         this.dimAlpha = AndroidUtilities.computePerceivedBrightness(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider)) > .705 ? 0x66 : 0x33;
 
-        if (fragment.getFragmentView() != null) {
-            //discard all scrolls/gestures
-            fragment.getFragmentView().getRootView().dispatchTouchEvent(AndroidUtilities.emptyMotionEvent());
-        }
         init();
     }
 
@@ -116,11 +115,9 @@ public class ItemOptions {
         layout = lastLayout;
     }
 
-    public ItemOptions addIf(boolean condition, int iconResId, CharSequence text, Runnable onClickListener) {
-        if (!condition) {
-            return this;
-        }
-        return add(iconResId, text, onClickListener);
+    public ItemOptions ignoreX() {
+        ignoreX = true;
+        return this;
     }
 
     public ItemOptions addIf(boolean condition, int iconResId, CharSequence text, boolean isRed, Runnable onClickListener) {
@@ -130,11 +127,11 @@ public class ItemOptions {
         return add(iconResId, text, isRed, onClickListener);
     }
 
-    public ItemOptions addIf(boolean condition, int iconResId, CharSequence text, Runnable onClickListener, Consumer<ActionBarMenuSubItem> onVewCreated) {
+    public ItemOptions addIf(boolean condition, int iconResId, CharSequence text, Runnable onClickListener) {
         if (!condition) {
             return this;
         }
-        return add(iconResId, text, Theme.key_actionBarDefaultSubmenuItemIcon, Theme.key_actionBarDefaultSubmenuItem, onClickListener, onVewCreated);
+        return add(iconResId, text, Theme.key_actionBarDefaultSubmenuItemIcon, Theme.key_actionBarDefaultSubmenuItem, onClickListener);
     }
 
     public ItemOptions add(int iconResId, CharSequence text, Runnable onClickListener) {
@@ -142,14 +139,14 @@ public class ItemOptions {
     }
 
     public ItemOptions add(int iconResId, CharSequence text, boolean isRed, Runnable onClickListener) {
-        return add(iconResId, text, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItemIcon, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItem, onClickListener, null);
+        return add(iconResId, text, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItemIcon, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItem, onClickListener);
     }
 
     public ItemOptions add(int iconResId, CharSequence text, int color, Runnable onClickListener) {
-        return add(iconResId, text, color, color, onClickListener, null);
+        return add(iconResId, text, color, color, onClickListener);
     }
 
-    public ItemOptions add(int iconResId, CharSequence text, int iconColorKey, int textColorKey, Runnable onClickListener, Consumer<ActionBarMenuSubItem> onViewCreated) {
+    public ItemOptions add(int iconResId, CharSequence text, int iconColorKey, int textColorKey, Runnable onClickListener) {
         if (context == null) {
             return this;
         }
@@ -171,16 +168,43 @@ public class ItemOptions {
         });
         if (minWidthDp > 0) {
             subItem.setMinimumWidth(AndroidUtilities.dp(minWidthDp));
+            lastLayout.addView(subItem, LayoutHelper.createLinear(minWidthDp, LayoutHelper.WRAP_CONTENT));
+        } else {
+            lastLayout.addView(subItem, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
         }
-        if (onViewCreated != null) {
-            onViewCreated.accept(subItem);
-        }
-
-        lastLayout.addView(subItem, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
 
         return this;
     }
 
+    public ItemOptions makeMultiline(boolean changeSize) {
+        if (context == null || lastLayout.getItemsCount() <= 0) {
+            return this;
+        }
+
+        View lastChild = lastLayout.getItemAt(lastLayout.getItemsCount() - 1);
+        if (lastChild instanceof ActionBarMenuSubItem) {
+            ((ActionBarMenuSubItem) lastChild).setMultiline(changeSize);
+        }
+        return this;
+    }
+
+    public ItemOptions cutTextInFancyHalf() {
+        if (context == null || lastLayout.getItemsCount() <= 0) {
+            return this;
+        }
+
+        View lastChild = lastLayout.getItemAt(lastLayout.getItemsCount() - 1);
+        if (lastChild instanceof ActionBarMenuSubItem) {
+            TextView textView = ((ActionBarMenuSubItem) lastChild).getTextView();
+            textView.setMaxWidth(
+                HintView2.cutInFancyHalf(textView.getText(), textView.getPaint()) + textView.getPaddingLeft() + textView.getPaddingRight()
+            );
+        }
+
+        return this;
+    }
+
+    private int shiftDp = -4;
     public ItemOptions putPremiumLock(Runnable onLockClick) {
         if (onLockClick == null || context == null || lastLayout.getItemsCount() <= 0) {
             return this;
@@ -194,6 +218,8 @@ public class ItemOptions {
         lastSubItem.getRightIcon().setAlpha(.4f);
         lastSubItem.setOnClickListener(view1 -> {
             if (onLockClick != null) {
+                AndroidUtilities.shakeViewSpring(view1, shiftDp = -shiftDp);
+                BotWebViewVibrationEffect.APP_ERROR.vibrate();
                 onLockClick.run();
             }
         });
@@ -224,7 +250,12 @@ public class ItemOptions {
         return this;
     }
 
-    public ItemOptions addView() {
+    public ItemOptions addView(View view) {
+        if (view == null) {
+            return this;
+        }
+        view.setTag(R.id.fit_width_tag, 1);
+        lastLayout.addView(view, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
         return this;
     }
 
@@ -333,6 +364,9 @@ public class ItemOptions {
         if (scrimView != null) {
             getPointOnScreen(scrimView, container, point);
             y = point[1];
+        }
+        if (ignoreX) {
+            point[0] = 0;
         }
 
         final Bitmap cachedBitmap;
@@ -451,6 +485,14 @@ public class ItemOptions {
         } else {
             Y = (container.getHeight() - layout.getMeasuredHeight()) / 2; // at the center
         }
+
+        // discard all scrolls/gestures
+        if (fragment != null && fragment.getFragmentView() != null) {
+            fragment.getFragmentView().getRootView().dispatchTouchEvent(AndroidUtilities.emptyMotionEvent());
+        } else if (this.container != null) {
+            container.dispatchTouchEvent(AndroidUtilities.emptyMotionEvent());
+        }
+
         actionBarPopupWindow.showAtLocation(
                 container,
                 0,

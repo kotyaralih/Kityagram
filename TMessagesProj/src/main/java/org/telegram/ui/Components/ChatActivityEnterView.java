@@ -191,6 +191,8 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
     private Runnable animationEndRunnable;
     private float attachLayoutTranslationX;
     private float attachLayoutPaddingTranslationX;
+    private float attachLayoutAlpha = 1f;
+    private float attachLayoutPaddingAlpha = 1f;
     private float messageTextTranslationX;
     private float messageTextPaddingTranslationX;
     private float horizontalPadding = 0;
@@ -951,6 +953,19 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         public void set(View object, Float value) {
             emojiButtonScale = value;
             updateEmojiButtonParams();
+        }
+    };
+
+    private final Property<? super View, Float> ATTACH_LAYOUT_ALPHA = new Property<View, Float>(Float.class, "attach_scale") {
+        @Override
+        public Float get(View object) {
+            return attachLayoutAlpha;
+        }
+
+        @Override
+        public void set(View object, Float value) {
+            attachLayoutAlpha = value;
+            updateAttachLayoutParams();
         }
     };
 
@@ -2131,7 +2146,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             }
             attachLayout.addView(attachButton, LayoutHelper.createLinear(48, 48));
             attachButton.setOnClickListener(v -> {
-                if (adjustPanLayoutHelper != null && adjustPanLayoutHelper.animationInProgress()) {
+                if (adjustPanLayoutHelper != null && adjustPanLayoutHelper.animationInProgress() || attachLayoutPaddingAlpha == 0f) {
                     return;
                 }
                 delegate.didPressAttachButton();
@@ -3699,7 +3714,12 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
                         sendPopupWindow.dismiss();
                     }
-                    AlertsCreator.createScheduleDatePickerDialog(parentActivity, parentFragment.getDialogId(), this::sendMessageInternal, resourcesProvider);
+                    AlertsCreator.createScheduleDatePickerDialog(parentActivity, parentFragment.getDialogId(), new AlertsCreator.ScheduleDatePickerDelegate() {
+                        @Override
+                        public void didSelectDate(boolean notify, int scheduleDate) {
+                            sendMessageInternal(notify, scheduleDate, true);
+                        }
+                    }, resourcesProvider);
                 });
                 sendPopupLayout.addView(scheduleButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
                 if (!self && dialog_id > 0) {
@@ -3710,7 +3730,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                         if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
                             sendPopupWindow.dismiss();
                         }
-                        sendMessageInternal(true, 0x7FFFFFFE);
+                        sendMessageInternal(true, 0x7FFFFFFE, true);
                     });
                     sendPopupLayout.addView(sendWhenOnlineButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
                 }
@@ -3723,7 +3743,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
                         sendPopupWindow.dismiss();
                     }
-                    sendMessageInternal(false, 0);
+                    sendMessageInternal(false, 0, true);
                 });
                 sendPopupLayout.addView(sendWithoutSoundButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
             }
@@ -5568,14 +5588,19 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
 
     private void sendMessage() {
         if (isInScheduleMode()) {
-            AlertsCreator.createScheduleDatePickerDialog(parentActivity, parentFragment.getDialogId(), this::sendMessageInternal, resourcesProvider);
+            AlertsCreator.createScheduleDatePickerDialog(parentActivity, parentFragment.getDialogId(), new AlertsCreator.ScheduleDatePickerDelegate() {
+                @Override
+                public void didSelectDate(boolean notify, int scheduleDate) {
+                    sendMessageInternal(notify, scheduleDate, true);
+                }
+            }, resourcesProvider);
         } else {
-            sendMessageInternal(true, 0);
+            sendMessageInternal(true, 0, true);
         }
     }
 
     private boolean premiumEmojiBulletin = true;
-    private void sendMessageInternal(boolean notify, int scheduleDate) {
+    private void sendMessageInternal(boolean notify, int scheduleDate, boolean allowConfirm) {
         if (slowModeTimer == Integer.MAX_VALUE && !isInScheduleMode()) {
             if (delegate != null) {
                 delegate.scrollToSendingMessage();
@@ -5595,6 +5620,11 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 emojiView.closeSearch(false);
                 emojiView.hideSearchKeyboard();
             }
+        }
+        if (allowConfirm && showConfirmAlert(() -> {
+            sendMessageInternal(notify, scheduleDate, false);
+        })) {
+            return;
         }
         if (videoToSendMessageObject != null) {
             delegate.needStartRecordVideo(4, notify, scheduleDate);
@@ -5659,6 +5689,10 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 delegate.onMessageSend(null, notify, scheduleDate);
             }
         }
+    }
+
+    protected boolean showConfirmAlert(Runnable onConfirmed) {
+        return false;
     }
 
     public static boolean checkPremiumAnimatedEmoji(int currentAccount, long dialogId, BaseFragment parentFragment, FrameLayout container, CharSequence message) {
@@ -5935,7 +5969,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     if (attachLayout != null) {
                         runningAnimation2 = new AnimatorSet();
                         ArrayList<Animator> animators = new ArrayList<>();
-                        animators.add(ObjectAnimator.ofFloat(attachLayout, View.ALPHA, 0.0f));
+                        animators.add(ObjectAnimator.ofFloat(attachLayout, ATTACH_LAYOUT_ALPHA, 0.0f));
                         animators.add(ObjectAnimator.ofFloat(attachLayout, View.SCALE_X, 0.0f));
                         scheduleButtonHidden = false;
                         boolean hasScheduled = delegate != null && delegate.hasScheduledMessages();
@@ -6119,7 +6153,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     if (attachLayout != null) {
                         runningAnimation2 = new AnimatorSet();
                         ArrayList<Animator> animators = new ArrayList<>();
-                        animators.add(ObjectAnimator.ofFloat(attachLayout, View.ALPHA, 0.0f));
+                        animators.add(ObjectAnimator.ofFloat(attachLayout, ATTACH_LAYOUT_ALPHA, 0.0f));
                         animators.add(ObjectAnimator.ofFloat(attachLayout, View.SCALE_X, 0.0f));
                         boolean hasScheduled = delegate != null && delegate.hasScheduledMessages();
                         scheduleButtonHidden = true;
@@ -6311,7 +6345,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     attachLayout.setVisibility(VISIBLE);
                     runningAnimation2 = new AnimatorSet();
                     ArrayList<Animator> animators = new ArrayList<>();
-                    animators.add(ObjectAnimator.ofFloat(attachLayout, View.ALPHA, 1.0f));
+                    animators.add(ObjectAnimator.ofFloat(attachLayout, ATTACH_LAYOUT_ALPHA, 1.0f));
                     animators.add(ObjectAnimator.ofFloat(attachLayout, View.SCALE_X, 1.0f));
                     boolean hasScheduled = delegate != null && delegate.hasScheduledMessages();
                     scheduleButtonHidden = false;
@@ -6471,12 +6505,13 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 if (attachLayout != null) {
                     if (attachLayout.getVisibility() != View.VISIBLE) {
                         attachLayout.setVisibility(VISIBLE);
-                        attachLayout.setAlpha(0f);
+                        attachLayoutAlpha = 0f;
+                        updateAttachLayoutParams();
                         attachLayout.setScaleX(0f);
                     }
                     runningAnimation2 = new AnimatorSet();
                     ArrayList<Animator> animators = new ArrayList<>();
-                    animators.add(ObjectAnimator.ofFloat(attachLayout, View.ALPHA, 1.0f));
+                    animators.add(ObjectAnimator.ofFloat(attachLayout, ATTACH_LAYOUT_ALPHA, 1.0f));
                     animators.add(ObjectAnimator.ofFloat(attachLayout, View.SCALE_X, 1.0f));
                     boolean hasScheduled = delegate != null && delegate.hasScheduledMessages();
                     scheduleButtonHidden = false;
@@ -6609,7 +6644,8 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     if (getVisibility() == VISIBLE) {
                         delegate.onAttachButtonShow();
                     }
-                    attachLayout.setAlpha(1.0f);
+                    attachLayoutAlpha = 1.0f;
+                    updateAttachLayoutParams();
                     attachLayout.setScaleX(1.0f);
                     attachLayout.setVisibility(VISIBLE);
                     updateFieldRight(1);
@@ -6800,7 +6836,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             if (attachLayout != null) {
                 viewTransition.playTogether(
                         ObjectAnimator.ofFloat(attachLayout, ATTACH_LAYOUT_TRANSLATION_X, AndroidUtilities.dp(30)),
-                        ObjectAnimator.ofFloat(attachLayout, View.ALPHA, 0f)
+                        ObjectAnimator.ofFloat(attachLayout, ATTACH_LAYOUT_ALPHA, 0f)
                 );
             }
 
@@ -6914,7 +6950,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 if (attachLayout != null) {
                     runningAnimationAudio.playTogether(
                             ObjectAnimator.ofFloat(attachLayout, ATTACH_LAYOUT_TRANSLATION_X, 0),
-                            ObjectAnimator.ofFloat(attachLayout, View.ALPHA, 1f)
+                            ObjectAnimator.ofFloat(attachLayout, ATTACH_LAYOUT_ALPHA, 1f)
                     );
                 }
 
@@ -7163,7 +7199,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     );
                     if (attachLayout != null) {
                         iconsAnimator.playTogether(
-                                ObjectAnimator.ofFloat(attachLayout, View.ALPHA, 1f),
+                                ObjectAnimator.ofFloat(attachLayout, ATTACH_LAYOUT_ALPHA, 1f),
                                 ObjectAnimator.ofFloat(attachLayout, ATTACH_LAYOUT_TRANSLATION_X, 0)
                         );
                     }
@@ -7202,7 +7238,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     if (attachLayout != null) {
                         icons2.playTogether(
                                 ObjectAnimator.ofFloat(attachLayout, ATTACH_LAYOUT_TRANSLATION_X, 0),
-                                ObjectAnimator.ofFloat(attachLayout, View.ALPHA, 1f)
+                                ObjectAnimator.ofFloat(attachLayout, ATTACH_LAYOUT_ALPHA, 1f)
                         );
                     }
                     if (scheduledButton != null) {
@@ -7295,7 +7331,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     attachLayoutTranslationX = 0;
                     updateAttachLayoutParams();
                     iconsAnimator.playTogether(
-                            ObjectAnimator.ofFloat(attachLayout, View.ALPHA, 1f)
+                            ObjectAnimator.ofFloat(attachLayout, ATTACH_LAYOUT_ALPHA, 1f)
                     );
                 }
                 if (scheduledButton != null) {
@@ -7646,7 +7682,8 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     setSlowModeButtonVisible(true);
                 }
                 attachLayout.setScaleX(0.01f);
-                attachLayout.setAlpha(0.0f);
+                attachLayoutAlpha = 0f;
+                updateAttachLayoutParams();
                 attachLayout.setVisibility(GONE);
                 audioVideoButtonContainer.setScaleX(0.1f);
                 audioVideoButtonContainer.setScaleY(0.1f);
@@ -7662,7 +7699,8 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 slowModeButton.setAlpha(0.0f);
                 setSlowModeButtonVisible(false);
                 attachLayout.setScaleX(1.0f);
-                attachLayout.setAlpha(1.0f);
+                attachLayoutAlpha = 1.0f;
+                updateAttachLayoutParams();
                 attachLayout.setVisibility(VISIBLE);
                 audioVideoButtonContainer.setScaleX(1.0f);
                 audioVideoButtonContainer.setScaleY(1.0f);
@@ -8746,50 +8784,56 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                         }
                         return;
                     }
-                    if (stickersExpanded) {
-                        if (searchingType != 0) {
-                            emojiView.hideSearchKeyboard();
-                        }
-                        setStickersExpanded(false, true, false);
-                    }
-                    TLRPC.StoryItem storyItem = delegate != null ? delegate.getReplyToStory() : null;
-                    if (gif instanceof TLRPC.Document) {
-                        TLRPC.Document document = (TLRPC.Document) gif;
-                        SendMessagesHelper.getInstance(currentAccount).sendSticker(document, query, dialog_id, replyingMessageObject, getThreadMessage(), storyItem, null, notify, scheduleDate, false, parent);
-                        MediaDataController.getInstance(currentAccount).addRecentGif(document, (int) (System.currentTimeMillis() / 1000), true);
-                        if (DialogObject.isEncryptedDialog(dialog_id)) {
-                            accountInstance.getMessagesController().saveGif(parent, document);
-                        }
-                    } else if (gif instanceof TLRPC.BotInlineResult) {
-                        TLRPC.BotInlineResult result = (TLRPC.BotInlineResult) gif;
+                    Runnable runnable = () -> {
 
-                        if (result.document != null) {
-                            MediaDataController.getInstance(currentAccount).addRecentGif(result.document, (int) (System.currentTimeMillis() / 1000), false);
+                        if (stickersExpanded) {
+                            if (searchingType != 0) {
+                                emojiView.hideSearchKeyboard();
+                            }
+                            setStickersExpanded(false, true, false);
+                        }
+                        TLRPC.StoryItem storyItem = delegate != null ? delegate.getReplyToStory() : null;
+                        if (gif instanceof TLRPC.Document) {
+                            TLRPC.Document document = (TLRPC.Document) gif;
+                            SendMessagesHelper.getInstance(currentAccount).sendSticker(document, query, dialog_id, replyingMessageObject, getThreadMessage(), storyItem, null, notify, scheduleDate, false, parent);
+                            MediaDataController.getInstance(currentAccount).addRecentGif(document, (int) (System.currentTimeMillis() / 1000), true);
                             if (DialogObject.isEncryptedDialog(dialog_id)) {
-                                accountInstance.getMessagesController().saveGif(parent, result.document);
+                                accountInstance.getMessagesController().saveGif(parent, document);
+                            }
+                        } else if (gif instanceof TLRPC.BotInlineResult) {
+                            TLRPC.BotInlineResult result = (TLRPC.BotInlineResult) gif;
+
+                            if (result.document != null) {
+                                MediaDataController.getInstance(currentAccount).addRecentGif(result.document, (int) (System.currentTimeMillis() / 1000), false);
+                                if (DialogObject.isEncryptedDialog(dialog_id)) {
+                                    accountInstance.getMessagesController().saveGif(parent, result.document);
+                                }
+                            }
+
+                            TLRPC.User bot = (TLRPC.User) parent;
+
+                            HashMap<String, String> params = new HashMap<>();
+                            params.put("id", result.id);
+                            params.put("query_id", "" + result.query_id);
+                            params.put("force_gif", "1");
+
+                            if (storyItem == null) {
+                                SendMessagesHelper.prepareSendingBotContextResult(parentFragment, accountInstance, result, params, dialog_id, replyingMessageObject, getThreadMessage(), storyItem, notify, scheduleDate);
+                            } else {
+                                SendMessagesHelper.getInstance(currentAccount).sendSticker(result.document, query, dialog_id, replyingMessageObject, getThreadMessage(), storyItem, null, notify, scheduleDate, false, parent);
+                            }
+                            if (searchingType != 0) {
+                                setSearchingTypeInternal(0, true);
+                                emojiView.closeSearch(true);
+                                emojiView.hideSearchKeyboard();
                             }
                         }
-
-                        TLRPC.User bot = (TLRPC.User) parent;
-
-                        HashMap<String, String> params = new HashMap<>();
-                        params.put("id", result.id);
-                        params.put("query_id", "" + result.query_id);
-                        params.put("force_gif", "1");
-
-                        if (storyItem == null) {
-                            SendMessagesHelper.prepareSendingBotContextResult(parentFragment, accountInstance, result, params, dialog_id, replyingMessageObject, getThreadMessage(), storyItem, notify, scheduleDate);
-                        } else {
-                            SendMessagesHelper.getInstance(currentAccount).sendSticker(result.document, query, dialog_id, replyingMessageObject, getThreadMessage(), storyItem, null, notify, scheduleDate, false, parent);
+                        if (delegate != null) {
+                            delegate.onMessageSend(null, notify, scheduleDate);
                         }
-                        if (searchingType != 0) {
-                            setSearchingTypeInternal(0, true);
-                            emojiView.closeSearch(true);
-                            emojiView.hideSearchKeyboard();
-                        }
-                    }
-                    if (delegate != null) {
-                        delegate.onMessageSend(null, notify, scheduleDate);
+                    };
+                    if (!showConfirmAlert(runnable)) {
+                        runnable.run();
                     }
                 }
             }
@@ -9015,27 +9059,32 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         if (isInScheduleMode() && scheduleDate == 0) {
             AlertsCreator.createScheduleDatePickerDialog(parentActivity, parentFragment.getDialogId(), (n, s) -> onStickerSelected(sticker, query, parent, sendAnimationData, clearsInputField, n, s), resourcesProvider);
         } else {
-            if (slowModeTimer > 0 && !isInScheduleMode()) {
-                if (delegate != null) {
-                    delegate.onUpdateSlowModeButton(slowModeButton, true, slowModeButton.getText());
+            Runnable runnable = () -> {
+                if (slowModeTimer > 0 && !isInScheduleMode()) {
+                    if (delegate != null) {
+                        delegate.onUpdateSlowModeButton(slowModeButton, true, slowModeButton.getText());
+                    }
+                    return;
                 }
-                return;
+                if (searchingType != 0) {
+                    setSearchingTypeInternal(0, true);
+                    emojiView.closeSearch(true);
+                    emojiView.hideSearchKeyboard();
+                }
+                setStickersExpanded(false, true, false);
+                TLRPC.StoryItem storyItem = delegate != null ? delegate.getReplyToStory() : null;
+                SendMessagesHelper.getInstance(currentAccount).sendSticker(sticker, query, dialog_id, replyingMessageObject, getThreadMessage(), storyItem, sendAnimationData, notify, scheduleDate, parent instanceof TLRPC.TL_messages_stickerSet, parent);
+                if (delegate != null) {
+                    delegate.onMessageSend(null, true, scheduleDate);
+                }
+                if (clearsInputField) {
+                    setFieldText("");
+                }
+                MediaDataController.getInstance(currentAccount).addRecentSticker(MediaDataController.TYPE_IMAGE, parent, sticker, (int) (System.currentTimeMillis() / 1000), false);
+            };
+            if (!showConfirmAlert(runnable)) {
+                runnable.run();
             }
-            if (searchingType != 0) {
-                setSearchingTypeInternal(0, true);
-                emojiView.closeSearch(true);
-                emojiView.hideSearchKeyboard();
-            }
-            setStickersExpanded(false, true, false);
-            TLRPC.StoryItem storyItem = delegate != null ? delegate.getReplyToStory() : null;
-            SendMessagesHelper.getInstance(currentAccount).sendSticker(sticker, query, dialog_id, replyingMessageObject, getThreadMessage(), storyItem, sendAnimationData, notify, scheduleDate, parent instanceof TLRPC.TL_messages_stickerSet, parent);
-            if (delegate != null) {
-                delegate.onMessageSend(null, true, scheduleDate);
-            }
-            if (clearsInputField) {
-                setFieldText("");
-            }
-            MediaDataController.getInstance(currentAccount).addRecentSticker(MediaDataController.TYPE_IMAGE, parent, sticker, (int) (System.currentTimeMillis() / 1000), false);
         }
     }
 
@@ -10449,7 +10498,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             float offsetY = enableTransition ? 0 : cancelToProgress * AndroidUtilities.dp(12);
 
             if (cancelToProgress != 1) {
-                int slideDelta = (int) (-getMeasuredWidth() / 4 * (1f - slideProgress));
+                int slideDelta = (int) (-getMeasuredWidth() / 4 * (1f - slideProgress) + recordCircle.getTranslationX() * 0.3f);
                 canvas.save();
                 canvas.clipRect((recordTimerView == null ? 0 : recordTimerView.getLeftProperty()) + AndroidUtilities.dp(4), 0, getMeasuredWidth(), getMeasuredHeight());
                 canvas.save();
@@ -10893,29 +10942,34 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
     }
 
     public void setHorizontalPadding(float padding, float progress, boolean allowShare) {
-        float v = -padding * (1f - progress);
+        float leftPadding = -padding * (1f - progress);
+        float rightPadding = -(padding + AndroidUtilities.dp(40)) * (1f - progress);
         float s = 0.5f + 0.5f * progress;
         emojiButtonPaddingScale = s;
         emojiButtonPaddingAlpha = progress;
         updateEmojiButtonParams();
-        emojiButton.setTranslationX(-v);
-        messageTextPaddingTranslationX = -v - AndroidUtilities.dp(31) * (1f - progress);
+        emojiButton.setTranslationX(-leftPadding);
+        messageTextPaddingTranslationX = -leftPadding - AndroidUtilities.dp(31) * (1f - progress);
         if (recordDeleteImageView != null) {
-            recordDeleteImageView.setTranslationX(-v);
+            recordDeleteImageView.setTranslationX(-leftPadding);
+        }
+        if (recordCircle != null) {
+            recordCircle.setTranslationX(rightPadding);
         }
         if (recordTimeContainer != null) {
-            recordTimeContainer.setTranslationX(-v);
+            recordTimeContainer.setTranslationX(-leftPadding);
         }
         if (recordedAudioPlayButton != null) {
-            recordedAudioPlayButton.setTranslationX(-v);
+            recordedAudioPlayButton.setTranslationX(-leftPadding);
         }
         if (recordedAudioTimeTextView != null) {
-            recordedAudioTimeTextView.setTranslationX(v);
+            recordedAudioTimeTextView.setTranslationX(leftPadding);
         }
-        sendButtonContainer.setTranslationX(v);
+        sendButtonContainer.setTranslationX(rightPadding);
         sendButtonContainer.setAlpha(allowShare ? progress : 1f);
         sendButtonEnabled = allowShare ? progress == 1f : true;
-        attachLayoutPaddingTranslationX = v;
+        attachLayoutPaddingTranslationX = rightPadding;
+        attachLayoutPaddingAlpha = progress;
         updateAttachLayoutParams();
         updateMessageTextParams();
         float newPadding = padding * (1f - progress);
@@ -10942,6 +10996,8 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
     private void updateAttachLayoutParams() {
         if (attachLayout != null) {
             attachLayout.setTranslationX(attachLayoutPaddingTranslationX + attachLayoutTranslationX);
+            attachLayout.setAlpha(attachLayoutAlpha * attachLayoutPaddingAlpha);
+            attachLayout.setVisibility(attachLayout.getAlpha() > 0 ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -10952,8 +11008,12 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
     }
 
     public void setOverrideHint(CharSequence overrideHint) {
+        setOverrideHint(overrideHint, false);
+    }
+
+    public void setOverrideHint(CharSequence overrideHint, boolean animated) {
         this.overrideHint = overrideHint;
-        updateFieldHint(false);
+        updateFieldHint(animated);
     }
 
     public void setOverrideKeyboardAnimation(boolean overrideKeyboardAnimation) {

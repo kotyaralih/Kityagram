@@ -13,6 +13,8 @@ import com.radolyn.ayugram.AyuConfig;
 import com.radolyn.ayugram.AyuConstants;
 import com.radolyn.ayugram.utils.AyuGhostUtils;
 import com.radolyn.ayugram.utils.AyuState;
+import com.google.android.exoplayer2.util.Log;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -489,6 +491,9 @@ public class ConnectionsManager extends BaseController {
     }
 
     public void bindRequestToGuid(int requestToken, int guid) {
+        if (guid == 0) {
+            return;
+        }
         native_bindRequestToGuid(currentAccount, requestToken, guid);
     }
 
