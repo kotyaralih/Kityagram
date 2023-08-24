@@ -1335,6 +1335,13 @@ public class DatabaseMigrationHelper {
             version = 128;
         }
 
+        if (version == 128) {
+            database.executeFast("ALTER TABLE story_drafts ADD COLUMN type INTEGER default 0").stepThis().dispose();
+
+            database.executeFast("PRAGMA user_version = 129").stepThis().dispose();
+            version = 129;
+        }
+
         return version;
     }
 
