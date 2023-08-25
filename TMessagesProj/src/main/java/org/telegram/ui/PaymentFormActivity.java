@@ -1131,6 +1131,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                 progressView.setVisibility(View.VISIBLE);
                 doneItem.setEnabled(false);
                 doneItem.getContentView().setVisibility(View.INVISIBLE);
+                AndroidUtilities.checkAndroidTheme(context, true);
                 webView = new WebView(context) {
                     @Override
                     public boolean onTouchEvent(MotionEvent event) {
@@ -2333,6 +2334,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                 doneItem.setEnabled(false);
                 doneItem.getContentView().setVisibility(View.INVISIBLE);
 
+                AndroidUtilities.checkAndroidTheme(context, true);
                 webView = new WebView(context) {
                     @Override
                     public boolean onTouchEvent(MotionEvent event) {
@@ -3091,6 +3093,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
         if (delegate != null) {
             delegate.onFragmentDestroyed();
         }
+        AndroidUtilities.checkAndroidTheme(getContext(), false);
         if (!paymentStatusSent) {
             invoiceStatus = InvoiceStatus.CANCELLED;
             if (paymentFormCallback != null && getOtherSameFragmentDiff() == 0) {
