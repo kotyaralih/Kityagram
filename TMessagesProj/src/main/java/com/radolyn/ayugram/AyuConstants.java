@@ -17,9 +17,6 @@ public class AyuConstants {
             1905581924, // @ayugramchat
             1794457129, // @ayugram1338
             1434550607, // @radolyn
-
-        /* kityagram official channel */
-            2306656922, // @kityagram
     };
     public static final long[] DEVS = {
         /* ayugram devs */
