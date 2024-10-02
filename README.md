@@ -1,20 +1,20 @@
 ## What's this fork even about?
 
-It's fork of [AyuGram for Android](https://github.com/AyuGram/AyuGram4A) ~~"without proprietary"~~ with no hidden source files and with **full code transparency unlike [original project](https://github.com/AyuGram/AyuGram4A)**. If you don't trust Github Actions, just [build apk by yourself](#where-do-i-find-apk)!
+It's a fork of [AyuGram for Android](https://github.com/AyuGram/AyuGram4A) with no hidden source files and with **full code transparency unlike [original project](https://github.com/AyuGram/AyuGram4A)**. If you don't trust Github Actions, just [build apk by yourself](#where-do-i-find-apk)!
 
 The differences between original project and this fork:
 1. [Reverse engineered source files that was hidden in private repository](https://github.com/Dr4iv3rNope/NotSoAndroidAyuGram/tree/rewrite/TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary)
 2. You can build that application by yourself and forget about "implementing AyuHistoryHook and AyuMessageUtils"
-2. AyuStinc(Sync) removed
-3. [You can download APK directly from this repository](https://github.com/Dr4iv3rNope/NotSoAndroidAyuGram/actions)
+2. AyuSync removed
+3. [You can download APK directly from this repository](https://github.com/kotyaralih/Kityagram/actions)
 
-Other information about original project you can find [here](https://github.com/AyuGram/AyuGram4A/blob/rewrite/README.md)
+Other information about the original project you can find [on its github page](https://github.com/AyuGram/AyuGram4A/blob/rewrite/README.md)
 
-## Where do i find APK?
+## Where do i find a pre-built APK of Kityagram?
 
-There's multiple ways to get AyuGram:
+There's multiple ways to get it:
 
-1. **[Download builded .apk from Github Actions](https://github.com/Dr4iv3rNope/NotSoAndroidAyuGram/actions)**
+1. **[Download builded .apk from Github Actions](https://github.com/kotyaralih/Kityagram/actions)**
 2. [Build it using Android Command Line Tools](#build-via-android-command-line-tools)
 3. [Build it using Github Actions](#set-up-github-actions)
 3. [Build it using Android Studio](#build-via-android-studio)
@@ -25,11 +25,11 @@ Ensure you have installed [Android Command Line Tools](https://developer.android
 
 1. **Clone this repository**
 
-   `git clone https://github.com/Dr4iv3rNope/NotSoAndroidAyuGram.git`
+   `git clone https://github.com/kotyaralih/Kityagram.git`
 
 2. **Navigate to repository**
 
-   `cd NotSoAndroidAyuGram`
+   `cd Kityagram`
 
 3. **Create "local.properties" and add "sdk.dir" variable**
 
@@ -103,22 +103,13 @@ Android studio can be downloaded [here](https://developer.android.com/studio)
 
 1. Clone this repository
 2. Open the project in Android Studio. It should be opened, **not imported**
-3. [Generate](https://firebase.google.com/docs/android/setup) and replace `google-services.json` ([he](https://github.com/ZavaruKitsu) don't want to see crash reports from your app...)
+3. [Generate](https://firebase.google.com/docs/android/setup) and replace `google-services.json`
 4. Generate signing keys and fill API_KEYS
 5. Build it!
 
-## AyuGram Localization
-
-[![Crowdin](https://badges.crowdin.net/ayugram/localized.svg)](https://crowdin.com/project/ayugram)
-[![Crowdin](https://badges.crowdin.net/exteralocales/localized.svg)](https://crowdin.com/project/exteralocales)
-
-We have our own **[Crowdin](https://crowdin.com/project/ayugram)**.
-
-But since **AyuGram** is based on **exteraGram**, also join their project
-at **[Crowdin](https://crowdin.com/project/exteralocales)**!
-
 ## Credits
 
+- **[AyuGram](https://github.com/AyuGram/AyuGram4A)**
 - **[exteraGram](https://github.com/exteraSquad/exteraGram)**
 - [Telegraher](https://github.com/nikitasius/Telegraher)
 - [Cherrygram](https://github.com/arsLan4k1390/Cherrygram)
