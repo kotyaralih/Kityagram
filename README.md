@@ -3,7 +3,7 @@
 It's a fork of [AyuGram for Android](https://github.com/AyuGram/AyuGram4A) with no hidden source files and with **full code transparency unlike [original project](https://github.com/AyuGram/AyuGram4A)**. If you don't trust Github Actions, just [build apk by yourself](#where-do-i-find-apk)!
 
 The differences between original project and this fork:
-1. [Reverse engineered source files that was hidden in private repository](https://github.com/Dr4iv3rNope/NotSoAndroidAyuGram/tree/rewrite/TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary)
+1. [Reverse engineered source files that were hidden in private repository](https://github.com/Dr4iv3rNope/NotSoAndroidAyuGram/tree/rewrite/TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary)
 2. You can build that application by yourself and forget about "implementing AyuHistoryHook and AyuMessageUtils"
 2. AyuSync removed
 3. [You can download APK directly from this repository](https://github.com/kotyaralih/Kityagram/actions)
@@ -14,14 +14,14 @@ Other information about the original project you can find [on its github page](h
 
 There's multiple ways to get it:
 
-1. **[Download builded .apk from Github Actions](https://github.com/kotyaralih/Kityagram/actions)**
-2. [Build it using Android Command Line Tools](#build-via-android-command-line-tools)
+1. **[Download it from Github Actions](https://github.com/kotyaralih/Kityagram/actions)**
+2. [Build it using Android Command Line Tools](#building-via-android-command-line-tools)
 3. [Build it using Github Actions](#set-up-github-actions)
-3. [Build it using Android Studio](#build-via-android-studio)
+3. [Build it using Android Studio](#building-via-android-studio)
 
-### Build via Android Command Line Tools
+### Building via Android Command Line Tools
 
-Ensure you have installed [Android Command Line Tools](https://developer.android.com/tools)
+Make sure that you have [Android Command Line Tools](https://developer.android.com/tools) installed
 
 1. **Clone this repository**
 
@@ -97,7 +97,7 @@ Ensure you have installed [Android Command Line Tools](https://developer.android
 7. Add **SIGNING_KEY_ALIAS** secret with **keystore alias name** value
 8. Now you're ready to [run build workflow](https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow#running-a-workflow)!
 
-### Build via Android Studio
+### Building via Android Studio
 
 Android studio can be downloaded [here](https://developer.android.com/studio)
 
@@ -105,7 +105,7 @@ Android studio can be downloaded [here](https://developer.android.com/studio)
 2. Open the project in Android Studio. It should be opened, **not imported**
 3. [Generate](https://firebase.google.com/docs/android/setup) and replace `google-services.json`
 4. Generate signing keys and fill API_KEYS
-5. Build it!
+5. Just build it!
 
 ## Credits
 
