@@ -87,7 +87,10 @@ public class AppUtils {
     private static final String EXPECTED_PACKAGE_NAME = "com.exteragram.messenger";
 
     public static boolean isAppModified() {
-        try {
+
+        //ofc it is modified, so it's better to just return true every time, than doing this check over and over
+
+        /*try {
             @SuppressLint("PackageManagerGetSignatures")
             PackageInfo packageInfo = ApplicationLoader.applicationContext.getPackageManager()
                     .getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), PackageManager.GET_SIGNATURES);
@@ -105,7 +108,7 @@ public class AppUtils {
                     || !EXPECTED_SIGNATURE.equals(currentSignature);
         } catch (Exception e) {
             FileLog.e(e);
-        }
+        }*/
         return true;
     }
 }
