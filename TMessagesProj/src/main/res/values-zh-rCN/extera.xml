@@ -15,7 +15,6 @@
     <string name="Links">链接</string>
     <string name="AboutExteraDescription">基于官方Telegram源码制作的第三方客户端</string>
     <string name="Channel">通知频道</string>
-    <string name="Crowdin">翻译</string>
     <string name="SourceCode">exteraGram 源码</string>
     <string name="Categories">设置分类</string>
     <!-- Appearance -->
