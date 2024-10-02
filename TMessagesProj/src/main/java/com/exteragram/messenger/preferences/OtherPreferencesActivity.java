@@ -43,7 +43,6 @@ public class OtherPreferencesActivity extends BasePreferencesActivity {
 
     private int analyticsHeaderRow;
     private int crashlyticsRow;
-    private int analyticsRow;
     private int analyticsDividerRow;
 
     private int deleteAccountRow;
@@ -56,7 +55,6 @@ public class OtherPreferencesActivity extends BasePreferencesActivity {
 
         analyticsHeaderRow = newRow();
         crashlyticsRow = newRow();
-        analyticsRow = newRow();
         analyticsDividerRow = newRow();
         
         resetSettingsRow = newRow();
@@ -71,15 +69,6 @@ public class OtherPreferencesActivity extends BasePreferencesActivity {
             ((TextCell) view).setChecked(ExteraConfig.useGoogleCrashlytics);
             if (ApplicationLoader.getFirebaseCrashlytics() != null) {
                 ApplicationLoader.getFirebaseCrashlytics().setCrashlyticsCollectionEnabled(ExteraConfig.useGoogleCrashlytics);
-            }
-        } else if (position == analyticsRow) {
-            ExteraConfig.editor.putBoolean("useGoogleAnalytics", ExteraConfig.useGoogleAnalytics ^= true).apply();
-            ((TextCell) view).setChecked(ExteraConfig.useGoogleAnalytics);
-            if (ApplicationLoader.getFirebaseAnalytics() != null) {
-                ApplicationLoader.getFirebaseAnalytics().setAnalyticsCollectionEnabled(ExteraConfig.useGoogleAnalytics);
-                if (!ExteraConfig.useGoogleAnalytics) {
-                    ApplicationLoader.getFirebaseAnalytics().resetAnalyticsData();
-                }
             }
         } else if (position == resetSettingsRow) {
             ExteraConfig.clearPreferences();
@@ -179,8 +168,6 @@ public class OtherPreferencesActivity extends BasePreferencesActivity {
                     TextCell textCell = (TextCell) holder.itemView;
                     if (position == crashlyticsRow) {
                         textCell.setTextAndCheckAndIcon("Crashlytics", ExteraConfig.useGoogleCrashlytics, R.drawable.msg_report, true);
-                    } else if (position == analyticsRow) {
-                        textCell.setTextAndCheckAndIcon("Analytics", ExteraConfig.useGoogleAnalytics, R.drawable.msg_data, false);
                     } else if (position == deleteAccountRow) {
                         textCell.setTextAndIcon(LocaleController.getString("DeleteAccount", R.string.DeleteAccount), R.drawable.msg_clearcache, false);
                         textCell.setColors(Theme.key_text_RedBold, Theme.key_text_RedBold);

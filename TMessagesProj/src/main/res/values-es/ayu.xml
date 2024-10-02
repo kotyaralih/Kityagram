@@ -47,28 +47,6 @@
   <string name="RegexFiltersAddDescription">Puede utilizar el sitio <![CDATA[<a href="https://regex101.com">regex101.com</a>]]> para probar completamente su expresión regular.
 También puede utilizar texto sin formato, pero no olvide escapar los paréntesis.</string>
   <string name="RegexFiltersAddError">Error de sintaxis en regex</string>
-  <string name="AyuSyncHeader">AyuSync</string>
-  <string name="AyuSyncStatusTitle">Estado de sincronización</string>
-  <string name="AyuSyncStatusOk">conectado</string>
-  <string name="AyuSyncStatusErrorDisconnected">desconectado</string>
-  <string name="AyuSyncStatusErrorNotRegistered">no registrado</string>
-  <string name="AyuSyncStatusErrorNoToken">sin token</string>
-  <string name="AyuSyncStatusErrorInvalidToken">token inválido</string>
-  <string name="AyuSyncStatusErrorNoMVP">sin MVP</string>
-  <string name="AyuSyncServerURL">Server URL</string>
-  <string name="AyuSyncServerToken">Access token</string>
-  <string name="AyuSyncEnable">Activar sincronización</string>
-  <string name="AyuSyncVisitProfile">Visitar perfil</string>
-  <string name="AyuSyncForceSync">Forzar sincronización de clientes</string>
-  <string name="AyuSyncDeviceIdentifier">Device ID</string>
-  <string name="AyuSyncLastEventSent">Último evento enviado</string>
-  <string name="AyuSyncLastEventReceived">Último evento recibido</string>
-  <string name="AyuSyncLastEventNever">nunca</string>
-  <string name="AyuSyncUseSecureConnection">Usar HTTPS y WSS</string>
-  <string name="AyuSyncIdentifierCopied">Identificador copiado al portapapeles.</string>
-  <string name="AyuSyncRegisterStatusCode">Registrar código de estado</string>
-  <string name="AyuSyncOpenPreferences">Open preferences</string>
-  <string name="AyuSyncDownloadAgent">Download agent</string>
   <string name="WALMode">Habilitar el modo WAL</string>
   <string name="ClearAyuDatabase">Clear Ayu Database</string>
   <string name="ClearAyuDatabaseNotification">AyuGram database cleared</string>

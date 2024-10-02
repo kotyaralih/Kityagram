@@ -139,7 +139,6 @@ public class ExteraConfig {
     };
     public static int voiceHintShowcases;
     public static boolean useGoogleCrashlytics;
-    public static boolean useGoogleAnalytics;
 
     private static boolean configLoaded;
 
@@ -261,7 +260,6 @@ public class ExteraConfig {
             targetLanguage = preferences.getString("targetLanguage", (String) supportedLanguages[8]);
             voiceHintShowcases = preferences.getInt("voiceHintShowcases", 0);
             useGoogleCrashlytics = preferences.getBoolean("useGoogleCrashlytics", BuildVars.isBetaApp());
-            useGoogleAnalytics = preferences.getBoolean("useGoogleAnalytics", BuildVars.isBetaApp());
 
             configLoaded = true;
         }

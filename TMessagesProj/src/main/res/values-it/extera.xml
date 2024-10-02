@@ -85,7 +85,7 @@
     <string name="DisableUnarchiveSwipe">Disattiva il gesto \"Estrai\"</string>
     <string name="DisableUnarchiveSwipeInfo">Scorrendo verso sinistra le chat non saranno rimosse dall\'archivio.</string>
     <!-- Other -->
-    <string name="AnalyticsInfo">Quando queste opzioni sono abilitate, i dati sul dispositivo vengono raccolti e inviati a Google Analytics e Crashlytics, permettendoci di mantenere le statistiche di utilizzo e monitorare gli errori nell\'app. \n\nTuttavia, se le opzioni sono disattivate, la raccolta dei dati si ferma e i dati inviati vengono immediatamente eliminati.</string>
+    <string name="AnalyticsInfo">Quando queste opzioni sono abilitate, i dati sul dispositivo vengono raccolti e inviati a Google Crashlytics, permettendoci di mantenere le statistiche di utilizzo e monitorare gli errori nell\'app. \n\nTuttavia, se le opzioni sono disattivate, la raccolta dei dati si ferma e i dati inviati vengono immediatamente eliminati.</string>
     <string name="DeleteAccount">Elimina account</string>
     <string name="ResetSettings">Ripristina impostazioni</string>
     <!-- Chats -->

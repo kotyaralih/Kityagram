@@ -12,7 +12,7 @@
 -->
 
 <resources>
-    <string name="exteraAppName" translatable="false">AyuGram</string>
+    <string name="exteraAppName" translatable="false">Kityagram</string>
     <string name="Preferences">exteraGram Preferences</string>
 
     <!-- Main Menu -->
@@ -104,7 +104,7 @@
     <string name="DisableUnarchiveSwipeInfo">Swiping to the left will not remove chats from the archive.</string>
 
     <!-- Other -->
-    <string name="AnalyticsInfo">When these options are enabled, data about the device is collected and sent to Google Analytics and Crashlytics, allowing us to keep usage statistics and track errors in the app. \n\nHowever, if the options are switched off, the data collection stops and the sent data is instantly deleted.</string>
+    <string name="AnalyticsInfo">When this option is enabled, data about the device is collected and sent to Google Crashlytics, allowing us to keep usage statistics and track errors in the app. \n\nHowever, if the option is off, the data collection stops and the sent data is instantly deleted.</string>
     <string name="DeleteAccount">Delete Account</string>
     <string name="ResetSettings">Reset Settings</string>
 

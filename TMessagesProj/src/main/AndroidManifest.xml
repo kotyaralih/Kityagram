@@ -115,7 +115,6 @@
 
     <uses-sdk tools:overrideLibrary="androidx.camera.view, androidx.camera.extensions, androidx.camera.lifecycle, androidx.camera.camera2, androidx.camera.core" />
 
-    <!-- AyuGram: remove for release `usesCleartextTraffic` -->
     <application
         android:name=".ApplicationLoader"
         android:allowAudioPlaybackCapture="true"
@@ -131,7 +130,6 @@
         android:restoreAnyVersion="true"
         android:supportsRtl="false"
         android:theme="@style/Theme.TMessages.Start"
-        android:usesCleartextTraffic="true"
         tools:replace="android:supportsRtl">
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
@@ -565,24 +563,6 @@
             android:exported="true"
             android:taskAffinity="${applicationId}.voip_feedback"
             android:theme="@style/Theme.TMessages.TransparentWithAlerts" />
-
-        <service
-            android:enabled="true"
-            android:exported="false"
-            android:name="com.google.android.gms.measurement.AppMeasurementService" />
-        <service
-            android:enabled="true"
-            android:exported="false"
-            android:name="com.google.android.gms.measurement.AppMeasurementJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <receiver android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="com.google.android.gms.measurement.UPLOAD" />
-                <action android:name="com.android.vending.INSTALL_REFERRER"/>
-            </intent-filter>
-        </receiver>
 
         <receiver
             android:name=".AutoMessageHeardReceiver"

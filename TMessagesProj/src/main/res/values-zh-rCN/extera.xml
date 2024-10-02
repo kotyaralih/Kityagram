@@ -85,7 +85,7 @@
     <string name="DisableUnarchiveSwipe">禁用\"取消存档\"滑动动作</string>
     <string name="DisableUnarchiveSwipeInfo">向左滑动不会删除归档中的聊天。</string>
     <!-- Other -->
-    <string name="AnalyticsInfo">启用这些选项后，将收集设备的数据并发送到Google Analytics 以及 Crashlytics。 允许我们保留使用统计并跟踪应用中的错误。 \n\n然而，如果该选项被关闭，数据收集将会中止，发送的数据被立即删除。</string>
+    <string name="AnalyticsInfo">启用这些选项后，将收集设备的数据并发送到Google Crashlytics。 允许我们保留使用统计并跟踪应用中的错误。 \n\n然而，如果该选项被关闭，数据收集将会中止，发送的数据被立即删除。</string>
     <string name="DeleteAccount">删除账户</string>
     <string name="ResetSettings">重置设置</string>
     <!-- Chats -->

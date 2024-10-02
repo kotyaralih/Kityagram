@@ -47,28 +47,6 @@
   <string name="RegexFiltersAddDescription">Вы можете использовать сайт <![CDATA[<a href="https://regex101.com">regex101.com</a>]]> для проверки регулярного выражения.
 Вы также можете использовать обычный текст, но не забудьте поставить \ перед скобками.</string>
   <string name="RegexFiltersAddError">Синтаксическая ошибка</string>
-  <string name="AyuSyncHeader">AyuSync</string>
-  <string name="AyuSyncStatusTitle">Статус синхронизации</string>
-  <string name="AyuSyncStatusOk">подключен</string>
-  <string name="AyuSyncStatusErrorDisconnected">отключен</string>
-  <string name="AyuSyncStatusErrorNotRegistered">не зарегистрирован</string>
-  <string name="AyuSyncStatusErrorNoToken">нет токена</string>
-  <string name="AyuSyncStatusErrorInvalidToken">неверный токен</string>
-  <string name="AyuSyncStatusErrorNoMVP">нет MVP</string>
-  <string name="AyuSyncServerURL">URL сервера</string>
-  <string name="AyuSyncServerToken">Токен доступа</string>
-  <string name="AyuSyncEnable">Включить синхронизацию</string>
-  <string name="AyuSyncVisitProfile">Открыть профиль</string>
-  <string name="AyuSyncForceSync">Принудительная синхронизация</string>
-  <string name="AyuSyncDeviceIdentifier">ID устройства</string>
-  <string name="AyuSyncLastEventSent">Последний отправленный пакет</string>
-  <string name="AyuSyncLastEventReceived">Последний полученный пакет</string>
-  <string name="AyuSyncLastEventNever">никогда</string>
-  <string name="AyuSyncUseSecureConnection">Использовать HTTPS и WSS</string>
-  <string name="AyuSyncIdentifierCopied">Идентификатор скопирован в буфер обмена.</string>
-  <string name="AyuSyncRegisterStatusCode">Статус регистрации</string>
-  <string name="AyuSyncOpenPreferences">Открыть настройки</string>
-  <string name="AyuSyncDownloadAgent">Скачать клиент</string>
   <string name="WALMode">Включить WAL режим</string>
   <string name="ClearAyuDatabase">Очистить AyuGram БД</string>
   <string name="ClearAyuDatabaseNotification">База сообщений AyuGram очищена</string>

@@ -13,11 +13,16 @@ import org.telegram.messenger.BuildVars;
 
 public class AyuConstants {
     public static final long[] OFFICIAL_CHANNELS = {
+        /* ayugram official channels */
             1905581924, // @ayugramchat
             1794457129, // @ayugram1338
             1434550607, // @radolyn
+
+        /* kityagram official channel */
+            2306656922, // @kityagram
     };
     public static final long[] DEVS = {
+        /* ayugram devs */
             139303278, // @alexeyzavar
             778327202, // @sharapagorg
             963494570, // @Zanko_no_tachi
@@ -39,18 +44,13 @@ public class AyuConstants {
 
     public static final int MESSAGE_EDITED_NOTIFICATION = 6968;
     public static final int MESSAGES_DELETED_NOTIFICATION = 6969;
-    public static final int AYUSYNC_STATE_CHANGED = 6970;
-    public static final int AYUSYNC_LAST_SENT_CHANGED = 6971;
-    public static final int AYUSYNC_LAST_RECEIVED_CHANGED = 6972;
-    public static final int AYUSYNC_REGISTER_STATUS_CODE_CHANGED = 6973;
 
     public static String DEFAULT_DELETED_MARK = "🧹";
-    public static String DEFAULT_AYUSYNC_SERVER = (true) ? "" : (BuildVars.isBetaApp() ? "ayusync-dev.radolyn.com:5000" : "ayusync.cloud"); // no ayusync
 
     public static String AYU_DATABASE = "ayu-data";
 
-    public static String APP_GITHUB = "AyuGram/AyuGram4A";
-    public static String APP_NAME = "AyuGram";
+    public static String APP_GITHUB = "kotyaralih/Kityagram";
+    public static String APP_NAME = "Kityagram";
 
     public static String BUILD_STORE_PACKAGE = "com.android.vending";
     public static String BUILD_ORIGINAL_PACKAGE = "org.telegram.messenger";

@@ -41,7 +41,6 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.radolyn.ayugram.AyuConfig;
 
-import com.radolyn.ayugram.sync.AyuSyncController;
 import org.telegram.messenger.voip.VideoCapturerDevice;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
@@ -230,10 +229,6 @@ public class ApplicationLoader extends Application {
         }
         ChatThemeController.init();
         BillingController.getInstance().startConnection();
-
-if (false) // no ayusync
-        // AyuGram: start sync
-        AyuSyncController.create();
     }
 
     public ApplicationLoader() {
@@ -359,22 +354,22 @@ if (false) // no ayusync
         }
     }
 
-    private static FirebaseAnalytics firebaseAnalytics;
+    //private static FirebaseAnalytics firebaseAnalytics;
     private static FirebaseCrashlytics firebaseCrashlytics;
 
     private void initFirebase() {
         AndroidUtilities.runOnUIThread(() -> {
-            firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+            //firebaseAnalytics = FirebaseAnalytics.getInstance(this);
             firebaseCrashlytics = FirebaseCrashlytics.getInstance();
-            firebaseAnalytics.setAnalyticsCollectionEnabled(ExteraConfig.useGoogleAnalytics);
+            //firebaseAnalytics.setAnalyticsCollectionEnabled(false);
             firebaseCrashlytics.setCrashlyticsCollectionEnabled(ExteraConfig.useGoogleCrashlytics);
-            CrashlyticsUtils.logEvents(applicationContext);
+            //CrashlyticsUtils.logEvents(applicationContext);
         });
     }
 
-    public static FirebaseAnalytics getFirebaseAnalytics() {
+    /*public static FirebaseAnalytics getFirebaseAnalytics() {
         return firebaseAnalytics;
-    }
+    }*/
 
     public static FirebaseCrashlytics getFirebaseCrashlytics() {
         return firebaseCrashlytics;

@@ -85,7 +85,7 @@
     <string name="DisableUnarchiveSwipe">تعطيل \"إلغاء الأرشيف\" بالسحب</string>
     <string name="DisableUnarchiveSwipeInfo">السحب إلى اليسار لن يزيل المحادثات من الأرشيف.</string>
     <!-- Other -->
-    <string name="AnalyticsInfo">عند تمكين هذه الخيارات، يتم جمع البيانات حول الجهاز وإرسالها إلى Google Analytics و Crashlytics، السماح لنا بحفظ إحصائيات الاستخدام وتتبع الأخطاء في التطبيق. \n\nومع ذلك، إذا تم إيقاف تشغيل الخيارات، تتوقف عملية جمع البيانات ويتم حذف البيانات المرسلة على الفور.</string>
+    <string name="AnalyticsInfo">عند تمكين هذه الخيارات، يتم جمع البيانات حول الجهاز وإرسالها إلى Google Crashlytics، السماح لنا بحفظ إحصائيات الاستخدام وتتبع الأخطاء في التطبيق. \n\nومع ذلك، إذا تم إيقاف تشغيل الخيارات، تتوقف عملية جمع البيانات ويتم حذف البيانات المرسلة على الفور.</string>
     <string name="DeleteAccount">حذف الحساب</string>
     <string name="ResetSettings">إعادة تعيين الإعدادات</string>
     <!-- Chats -->

@@ -46,7 +46,7 @@ public class CrashlyticsUtils {
         }
     }
 
-    public static void logEvents(Context context) {
+    /*public static void logEvents(Context context) {
         if (ApplicationLoader.getFirebaseAnalytics() == null) {
             return;
         }
@@ -63,5 +63,5 @@ public class CrashlyticsUtils {
         params.putString("display", AndroidUtilities.displaySize.x + "x" + AndroidUtilities.displaySize.y);
         params.putBoolean("debug_build", BuildVars.isBetaApp());
         ApplicationLoader.getFirebaseAnalytics().logEvent("stats", params);
-    }
+    }*/
 }

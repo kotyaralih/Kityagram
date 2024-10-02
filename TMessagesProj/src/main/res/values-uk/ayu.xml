@@ -47,28 +47,6 @@
   <string name="RegexFiltersAddDescription">Ви можете використовувати <![CDATA[<a href="https://regex101.com">regex101.com</a>]]> для тесту ваших регулярних виразів.
 Ви також можете використовувати звичайний текст, але не забудьте екранувати дужки.</string>
   <string name="RegexFiltersAddError">Синтаксична помилка регулярного виразу</string>
-  <string name="AyuSyncHeader">AyuSync</string>
-  <string name="AyuSyncStatusTitle">Статус синхронізації</string>
-  <string name="AyuSyncStatusOk">під’єднано</string>
-  <string name="AyuSyncStatusErrorDisconnected">від\'єднано</string>
-  <string name="AyuSyncStatusErrorNotRegistered">не зареєстрований</string>
-  <string name="AyuSyncStatusErrorNoToken">немає токена</string>
-  <string name="AyuSyncStatusErrorInvalidToken">невірний токен</string>
-  <string name="AyuSyncStatusErrorNoMVP">немає MVP</string>
-  <string name="AyuSyncServerURL">URL-адреса сервера</string>
-  <string name="AyuSyncServerToken">Токен доступу</string>
-  <string name="AyuSyncEnable">Увімкнути синхронізацію</string>
-  <string name="AyuSyncVisitProfile">Відвідати профіль</string>
-  <string name="AyuSyncForceSync">Примусово синхронізувати клієнтів</string>
-  <string name="AyuSyncDeviceIdentifier">ID пристрою</string>
-  <string name="AyuSyncLastEventSent">Остання надіслана подія</string>
-  <string name="AyuSyncLastEventReceived">Остання отримана подія</string>
-  <string name="AyuSyncLastEventNever">ніколи</string>
-  <string name="AyuSyncUseSecureConnection">Використовувати HTTPS &amp; WSS</string>
-  <string name="AyuSyncIdentifierCopied">ID скопійований до буфера обміну.</string>
-  <string name="AyuSyncRegisterStatusCode">Код статусу реєстрації</string>
-  <string name="AyuSyncOpenPreferences">Відкрити налаштування</string>
-  <string name="AyuSyncDownloadAgent">Завантажити клієнт</string>
   <string name="WALMode">Увімкнути режим WAL</string>
   <string name="ClearAyuDatabase">Очистити базу даних AyuGram</string>
   <string name="ClearAyuDatabaseNotification">Базу даних AyuGram очищено</string>

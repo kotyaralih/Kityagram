@@ -18,7 +18,6 @@ import com.exteragram.messenger.preferences.BasePreferencesActivity;
 import com.radolyn.ayugram.AyuConfig;
 import com.radolyn.ayugram.AyuConstants;
 import com.radolyn.ayugram.messages.AyuMessagesController;
-import com.radolyn.ayugram.sync.AyuSyncState;
 import com.radolyn.ayugram.ui.preferences.utils.AyuUi;
 import com.radolyn.ayugram.utils.AyuState;
 import org.jetbrains.annotations.NotNull;
@@ -64,10 +63,6 @@ public class AyuGramPreferencesActivity extends BasePreferencesActivity implemen
     private int showGhostToggleInDrawerRow;
     private int showKillButtonInDrawerRow;
     private int customizationDividerRow;
-
-    private int ayuSyncHeaderRow;
-    private int ayuSyncStatusBtnRow;
-    private int ayuSyncDividerRow;
 
     private int debugHeaderRow;
     private int WALModeRow;
@@ -119,12 +114,6 @@ public class AyuGramPreferencesActivity extends BasePreferencesActivity implemen
         showKillButtonInDrawerRow = newRow();
         customizationDividerRow = newRow();
 
-if (false) { // no ayusync begin
-        ayuSyncHeaderRow = newRow();
-        ayuSyncStatusBtnRow = newRow();
-        ayuSyncDividerRow = newRow();
-} // no ayusync end
-
         debugHeaderRow = newRow();
         WALModeRow = newRow();
         buttonsDividerRow = newRow();
@@ -138,8 +127,6 @@ if (false) { // no ayusync begin
         // todo: register `MESSAGES_DELETED_NOTIFICATION` on all notification centers, not only on the current account
 
         NotificationCenter.getInstance(UserConfig.selectedAccount).addObserver(this, AyuConstants.MESSAGES_DELETED_NOTIFICATION);
-if (false) // no ayusync
-        NotificationCenter.getGlobalInstance().addObserver(this, AyuConstants.AYUSYNC_STATE_CHANGED);
 
         return true;
     }
@@ -151,10 +138,6 @@ if (false) // no ayusync
             if (listAdapter != null) {
                 listAdapter.notifyItemChanged(clearAyuDatabaseBtnRow);
             }
-        } else if (id == AyuConstants.AYUSYNC_STATE_CHANGED) {
-            if (listAdapter != null) {
-                listAdapter.notifyItemChanged(ayuSyncStatusBtnRow);
-            }
         }
     }
 
@@ -163,8 +146,6 @@ if (false) // no ayusync
         super.onFragmentDestroy();
 
         NotificationCenter.getInstance(UserConfig.selectedAccount).removeObserver(this, AyuConstants.MESSAGES_DELETED_NOTIFICATION);
-if (false) // no ayusync
-        NotificationCenter.getGlobalInstance().removeObserver(this, AyuConstants.AYUSYNC_STATE_CHANGED);
     }
 
     private void updateGhostViews() {
@@ -299,8 +280,6 @@ if (false) // no ayusync
                     "editedMarkText",
                     LocaleController.getString("EditedMessage", R.string.EditedMessage) // don't remove key
             );
-        } else if (false && position == ayuSyncStatusBtnRow) { // no ayusync
-            presentFragment(new AyuSyncPreferencesActivity());
         } else if (position == WALModeRow) {
             AyuConfig.editor.putBoolean("WALMode", AyuConfig.WALMode ^= true).apply();
             ((TextCheckCell) view).setChecked(AyuConfig.WALMode);
@@ -373,10 +352,6 @@ if (false) // no ayusync
                         textCell.setTextAndValue(LocaleController.getString(R.string.DeletedMarkText), AyuConfig.getDeletedMark(), true);
                     } else if (position == editedMarkTextRow) {
                         textCell.setTextAndValue(LocaleController.getString(R.string.EditedMarkText), AyuConfig.getEditedMark(), true);
-                    } else if (false && position == ayuSyncStatusBtnRow) { // no ayusync
-                        var status = AyuSyncState.getConnectionStateString();
-
-                        textCell.setTextAndValue(LocaleController.getString(R.string.AyuSyncStatusTitle), status, false);
                     } else if (position == clearAyuDatabaseBtnRow) {
                         var file = ApplicationLoader.applicationContext.getDatabasePath(AyuConstants.AYU_DATABASE);
                         var size = file.exists() ? file.length() : 0;
@@ -398,8 +373,6 @@ if (false) // no ayusync
                         headerCell.setText(LocaleController.getString(R.string.QoLTogglesHeader));
                     } else if (position == customizationHeaderRow) {
                         headerCell.setText(LocaleController.getString(R.string.CustomizationHeader));
-                    } else if (false && position == ayuSyncHeaderRow) { // no ayusync
-                        headerCell.setText(LocaleController.getString(R.string.AyuSyncHeader));
                     } else if (position == debugHeaderRow) {
                         headerCell.setText(LocaleController.getString("SettingsDebug", R.string.SettingsDebug));
                     }
@@ -485,7 +458,6 @@ if (false) // no ayusync
                             position == spyDivider2Row ||
                             position == qolDividerRow ||
                             position == customizationDividerRow ||
-                            (false && position == ayuSyncDividerRow) || // no ayusync
                             position == buttonsDividerRow
             ) {
                 return 1;
@@ -493,7 +465,6 @@ if (false) // no ayusync
                     position == messageSavingBtnRow ||
                             position == deletedMarkTextRow ||
                             position == editedMarkTextRow ||
-                            (false && position == ayuSyncStatusBtnRow) || // no ayusync
                             position == clearAyuDatabaseBtnRow ||
                             position == eraseLocalDatabaseBtnRow
             ) {
@@ -503,7 +474,6 @@ if (false) // no ayusync
                             position == spyHeaderRow ||
                             position == qolHeaderRow ||
                             position == customizationHeaderRow ||
-                            (false && position == ayuSyncHeaderRow) || // no ayusync
                             position == debugHeaderRow
             ) {
                 return 3;

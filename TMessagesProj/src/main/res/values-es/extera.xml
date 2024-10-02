@@ -85,7 +85,7 @@
     <string name="DisableUnarchiveSwipe">Desactivar el deslizado \"Desarchivar\"</string>
     <string name="DisableUnarchiveSwipeInfo">Deslizar hacia la izquierda no eliminará los chats archivados.</string>
     <!-- Other -->
-    <string name="AnalyticsInfo">Cuando estas opciones están habilitadas, los datos sobre el dispositivo se recolectan y envían a Google Analytics y Crashlytics, permitiéndonos mantener las estadísticas de uso y rastrear errores en la app. \n\nSin embargo, si las opciones están desactivadas, la recolección de datos se detiene y los datos enviados se eliminan al instante.</string>
+    <string name="AnalyticsInfo">Cuando estas opciones están habilitadas, los datos sobre el dispositivo se recolectan y envían a Google Crashlytics, permitiéndonos mantener las estadísticas de uso y rastrear errores en la app. \n\nSin embargo, si las opciones están desactivadas, la recolección de datos se detiene y los datos enviados se eliminan al instante.</string>
     <string name="DeleteAccount">Eliminar cuenta</string>
     <string name="ResetSettings">Restablecer ajustes</string>
     <!-- Chats -->
