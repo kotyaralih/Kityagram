@@ -139,7 +139,7 @@ CameraX wspierana jest tylko na
     <string name="TrackSaved">Utwór zapisany do **%1$s**.</string>
     <string name="ConfirmCall">Potwierdź połączenie</string>
     <string name="CallTo">Zadzwonić do **%1$s**?</string>
-    <string name="AppIconGradient">Gradient</string>
-    <string name="AppIconSpace">Kosmos</string>
-    <string name="AppIconWinter">Zima</string>
+    <string name="AppIconGradient">Ayu Gradient</string>
+    <string name="AppIconSpace">Extera Kosmos</string>
+    <string name="AppIconWinter">Extera Zima</string>
 </resources>

@@ -218,12 +218,12 @@
     <string name="ConfirmCall">Подтверждение звонка</string>
     <string name="CallTo">Позвонить **%1$s**?</string>
 
-    <string name="AppIconGradient">Градиент</string>
-    <string name="AppIconAurora">Аврора</string>
-    <string name="AppIconNeo">Нео</string>
-    <string name="AppIconAmethyst">Аметист</string>
-    <string name="AppIconSpace">Космос</string>
-    <string name="AppIconOrbit">Орбита</string>
-    <string name="AppIconSus">Самозванец</string>
-    <string name="AppIconWinter">Зима</string>
+    <string name="AppIconGradient">Ayu Градиент</string>
+    <string name="AppIconAurora">Ayu Аврора</string>
+    <string name="AppIconNeo">Extera Нео</string>
+    <string name="AppIconAmethyst">Extera Аметист</string>
+    <string name="AppIconSpace">Extera Космос</string>
+    <string name="AppIconOrbit">Extera Орбита</string>
+    <string name="AppIconSus">Extera Самозванец</string>
+    <string name="AppIconWinter">Extera Зима</string>
 </resources>

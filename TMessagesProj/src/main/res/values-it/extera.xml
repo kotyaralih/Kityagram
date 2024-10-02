@@ -183,12 +183,12 @@
     <string name="ChannelToSaveChanged">Le tracce saranno salvate nei **%1$s**.</string>
     <string name="ConfirmCall">Conferma chiamata</string>
     <string name="CallTo">Vuoi chiamare **%1$s**?</string>
-    <string name="AppIconGradient">Gradiente</string>
-    <string name="AppIconAurora">Aurora</string>
-    <string name="AppIconNeo">Neo</string>
-    <string name="AppIconAmethyst">Ametista</string>
-    <string name="AppIconSpace">Spazio</string>
-    <string name="AppIconOrbit">Orbita</string>
-    <string name="AppIconSus">Impostore</string>
-    <string name="AppIconWinter">Inverno</string>
+    <string name="AppIconGradient">Ayu Gradiente</string>
+    <string name="AppIconAurora">Ayu Aurora</string>
+    <string name="AppIconNeo">Extera Neo</string>
+    <string name="AppIconAmethyst">Extera Ametista</string>
+    <string name="AppIconSpace">Extera Spazio</string>
+    <string name="AppIconOrbit">Extera Orbita</string>
+    <string name="AppIconSus">Extera Impostore</string>
+    <string name="AppIconWinter">Extera Inverno</string>
 </resources>

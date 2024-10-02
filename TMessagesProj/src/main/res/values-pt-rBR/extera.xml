@@ -183,12 +183,12 @@
     <string name="ChannelToSaveChanged">Faixas serão salvas em **%1$s**.</string>
     <string name="ConfirmCall">Confirmar ligação</string>
     <string name="CallTo">Ligar para **%1$s**?</string>
-    <string name="AppIconGradient">Gradiente</string>
-    <string name="AppIconAurora">Aurora</string>
-    <string name="AppIconNeo">Neo</string>
-    <string name="AppIconAmethyst">Ametista</string>
-    <string name="AppIconSpace">Space</string>
-    <string name="AppIconOrbit">Órbita</string>
-    <string name="AppIconSus">Impostor</string>
-    <string name="AppIconWinter">Winter</string>
+    <string name="AppIconGradient">Ayu Gradiente</string>
+    <string name="AppIconAurora">Ayu Aurora</string>
+    <string name="AppIconNeo">Extera Neo</string>
+    <string name="AppIconAmethyst">Extera Ametista</string>
+    <string name="AppIconSpace">Extera Space</string>
+    <string name="AppIconOrbit">Extera Órbita</string>
+    <string name="AppIconSus">Extera Impostor</string>
+    <string name="AppIconWinter">Extera Winter</string>
 </resources>

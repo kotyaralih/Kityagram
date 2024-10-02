@@ -223,14 +223,14 @@
     <string name="formatterDay12HSec" translatable="false">h:mm:ss a</string>
 
     <string name="AppIconMonet" translatable="false">Monet</string>
-    <string name="AppIconGradient">Gradient</string>
-    <string name="AppIconAurora">Aurora</string>
-    <string name="AppIconNeo">Neo</string>
-    <string name="AppIconGoogle" translatable="false">Google</string>
-    <string name="AppIconAmethyst">Amethyst</string>
-    <string name="AppIcon480DSGN" translatable="false">480 DSGN</string>
-    <string name="AppIconSpace">Space</string>
-    <string name="AppIconOrbit">Orbit</string>
-    <string name="AppIconSus">Impostor</string>
-    <string name="AppIconWinter">Winter</string>
+    <string name="AppIconGradient">Ayu Gradient</string>
+    <string name="AppIconAurora">Ayu Aurora</string>
+    <string name="AppIconNeo">Extera Neo</string>
+    <string name="AppIconGoogle" translatable="false">Extera Google</string>
+    <string name="AppIconAmethyst">Extera Amethyst</string>
+    <string name="AppIcon480DSGN" translatable="false">Extera 480 DSGN</string>
+    <string name="AppIconSpace">Extera Space</string>
+    <string name="AppIconOrbit">Extera Orbit</string>
+    <string name="AppIconSus">Extera Impostor</string>
+    <string name="AppIconWinter">Extera Winter</string>
 </resources>

@@ -139,7 +139,7 @@ CameraX wird nur auf
     <string name="TrackSaved">Track wurde in **%1$s ** gespeichert.</string>
     <string name="ConfirmCall">Anruf bestätigen</string>
     <string name="CallTo">Anruf an **%1$s**?</string>
-    <string name="AppIconGradient">Farbverlauf</string>
-    <string name="AppIconSpace">Weltall</string>
-    <string name="AppIconWinter">Winter</string>
+    <string name="AppIconGradient">Ayu Farbverlauf</string>
+    <string name="AppIconSpace">Extera Weltall</string>
+    <string name="AppIconWinter">Extera Winter</string>
 </resources>

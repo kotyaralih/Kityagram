@@ -186,12 +186,12 @@ CameraX падтрымліваецца толькі на
     <string name="ChannelToSaveChanged">Трэк захаваны ў **%1$s**.</string>
     <string name="ConfirmCall">Пацвердзіць выклік</string>
     <string name="CallTo">Тэлефанаваць **%1$s**?</string>
-    <string name="AppIconGradient">Градыент</string>
-    <string name="AppIconAurora">Аўрора</string>
-    <string name="AppIconNeo">Неа</string>
-    <string name="AppIconAmethyst">Аметыст</string>
-    <string name="AppIconSpace">Космас</string>
-    <string name="AppIconOrbit">Арбіта</string>
-    <string name="AppIconSus">Самазванец</string>
-    <string name="AppIconWinter">Зіма</string>
+    <string name="AppIconGradient">Ayu Градыент</string>
+    <string name="AppIconAurora">Ayu Аўрора</string>
+    <string name="AppIconNeo">Extera Неа</string>
+    <string name="AppIconAmethyst">Extera Аметыст</string>
+    <string name="AppIconSpace">Extera Космас</string>
+    <string name="AppIconOrbit">Extera Арбіта</string>
+    <string name="AppIconSus">Extera Самазванец</string>
+    <string name="AppIconWinter">Extera Зіма</string>
 </resources>
