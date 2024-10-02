@@ -215,7 +215,7 @@ android {
             def formattedDate = date.format('ddMMyyyy')
             def abi = abis.get(variant.productFlavors.get(0).abiVersionCode)
 
-            outputFileName = "ayuGram-${buildType}${abi}-${formattedDate}.apk"
+            outputFileName = "Kityagram-${buildType}${abi}-${formattedDate}.apk"
             output.versionCodeOverride = defaultConfig.versionCode * (isPmBuild == "true" ? 100 : 10) + variant.productFlavors.get(0).abiVersionCode
         }
     }
