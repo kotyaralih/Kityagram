@@ -37,7 +37,6 @@ import androidx.multidex.MultiDex;
 import com.exteragram.messenger.ExteraConfig;
 import com.exteragram.messenger.camera.CameraXUtils;
 import com.exteragram.messenger.utils.CrashlyticsUtils;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.radolyn.ayugram.AyuConfig;
 
