@@ -3,7 +3,7 @@
 It's a fork of [AyuGram for Android](https://github.com/AyuGram/AyuGram4A) with no hidden source files and with **full code transparency unlike [original project](https://github.com/AyuGram/AyuGram4A)**. If you don't trust Github Actions, just [build apk by yourself](#where-do-i-find-apk)!
 
 The differences between original project and this fork:
-1. [Reverse engineered source files that were hidden in private repository](https://github.com/Dr4iv3rNope/NotSoAndroidAyuGram/tree/rewrite/TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary)
+1. [Reverse engineered source files that were hidden in private repository](https://github.com/kotyaralih/Kityagram/tree/rewrite/TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary)
 2. You can build that application by yourself and forget about "implementing AyuHistoryHook and AyuMessageUtils"
 2. AyuSync removed
 3. [You can download APK directly from this repository](https://github.com/kotyaralih/Kityagram/actions)
