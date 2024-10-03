@@ -45,23 +45,4 @@ public class CrashlyticsUtils {
                 return "N/A";
         }
     }
-
-    /*public static void logEvents(Context context) {
-        if (ApplicationLoader.getFirebaseAnalytics() == null) {
-            return;
-        }
-        Bundle params = new Bundle();
-        params.putString("android_version", Build.VERSION.RELEASE);
-        params.putString("version", BuildConfig.VERSION_NAME);
-        params.putInt("version_code", BuildConfig.VERSION_CODE);
-        params.putBoolean("has_play_services", isGooglePlayServicesAvailable(context));
-        params.putString("device", LocaleUtils.capitalize(Build.MANUFACTURER) + " " + Build.MODEL);
-        params.putString("performance_class", getPerformanceClassString());
-        params.putString("locale", LocaleController.getSystemLocaleStringIso639());
-        params.putString("cache_path", AndroidUtilities.getCacheDir().getAbsolutePath());
-        params.putInt("refresh_rate", (int) AndroidUtilities.screenRefreshRate);
-        params.putString("display", AndroidUtilities.displaySize.x + "x" + AndroidUtilities.displaySize.y);
-        params.putBoolean("debug_build", BuildVars.isBetaApp());
-        ApplicationLoader.getFirebaseAnalytics().logEvent("stats", params);
-    }*/
 }

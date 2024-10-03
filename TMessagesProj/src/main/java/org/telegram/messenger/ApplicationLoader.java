@@ -353,22 +353,14 @@ public class ApplicationLoader extends Application {
         }
     }
 
-    //private static FirebaseAnalytics firebaseAnalytics;
     private static FirebaseCrashlytics firebaseCrashlytics;
 
     private void initFirebase() {
         AndroidUtilities.runOnUIThread(() -> {
-            //firebaseAnalytics = FirebaseAnalytics.getInstance(this);
             firebaseCrashlytics = FirebaseCrashlytics.getInstance();
-            //firebaseAnalytics.setAnalyticsCollectionEnabled(false);
             firebaseCrashlytics.setCrashlyticsCollectionEnabled(ExteraConfig.useGoogleCrashlytics);
-            //CrashlyticsUtils.logEvents(applicationContext);
         });
     }
-
-    /*public static FirebaseAnalytics getFirebaseAnalytics() {
-        return firebaseAnalytics;
-    }*/
 
     public static FirebaseCrashlytics getFirebaseCrashlytics() {
         return firebaseCrashlytics;
